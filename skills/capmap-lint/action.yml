@@ -1,0 +1,14 @@
+name: capmap-lint
+description: Lint the docs_root capability vault (strict)
+runs:
+  using: composite
+  steps:
+    - uses: actions/setup-python@v5
+      with:
+        python-version: "3.13"
+    - name: Install PyYAML
+      shell: bash
+      run: pip install pyyaml
+    - name: Run capmap-lint
+      shell: bash
+      run: python .agents/skills/capmap-lint/capmap_lint.py --strict
