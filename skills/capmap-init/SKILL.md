@@ -2,7 +2,7 @@
 name: capmap-init
 description: >-
   初始化或对齐仓库文档根目录（docs_root 名任意）：选定并写入 .agents/skills/capmap-system/capmap.yaml，
-  创建文档首页、主题能力底图、规范/运维/归档索引、gitignore、可选 Obsidian。
+  创建文档首页、主题能力底图、规范/运维/归档索引、gitignore、可选 Obsidian（含 graph.json 状态颜色组）。
   适用于「初始化 docs」「整理文档目录」「按能力底图体系建文档」「对齐文档结构」时使用。
 ---
 
@@ -80,6 +80,7 @@ description: >-
 - docs_root（配置）：…
 - 已存在：…
 - 缺失（将创建）：…
+- Obsidian graph.json：已写入 / 已合并 colorGroups / 跳过
 - 违规：如 方案/xx/README.md 当作底图
 - 跳过（不覆盖）：…
 ```
