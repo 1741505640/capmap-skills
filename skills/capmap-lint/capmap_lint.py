@@ -21,7 +21,20 @@ from pathlib import Path
 import yaml
 
 SKILL_DIR = Path(__file__).resolve().parent
-ROOT = SKILL_DIR.parents[2]  # repo root
+
+
+def _find_repo_root(start: Path) -> Path:
+    """Locate repo root that contains .agents/skills/capmap-system/capmap.yaml."""
+    for p in [start, *start.parents]:
+        if (p / ".agents" / "skills" / "capmap-system" / "capmap.yaml").is_file():
+            return p
+    # Fallback: skills/capmap-lint → parents[1] == repo when published under skills/
+    if start.name == "capmap-lint" and start.parent.name == "skills":
+        return start.parent.parent
+    return start.parents[2]
+
+
+ROOT = _find_repo_root(SKILL_DIR)
 CONFIG = (
     ROOT / ".agents" / "skills" / "capmap-system" / "capmap.yaml"
 )
@@ -31,12 +44,14 @@ MD_LINK_RE = re.compile(r"\[([^\]]*)\]\(([^)]+)\)")
 FRONT_MATTER_RE = re.compile(r"\A---\s*\n(.*?)\n---\s*\n", re.DOTALL)
 STATUS_CELL_RE = re.compile(
     r"^\|\s*([^|]+?)\s*\|\s*"
-    r"(方案中|开发中|已开发|验证中|已验证|落地中|已落地)\s*\|",
+    r"(方案中|已确认|规格中|已拆分|开发中|已开发|验证中|已验证|落地中|已落地)\s*\|",
     re.MULTILINE,
 )
 SCHEME_STATUS_ACTIVE = {
     "状态/方案中",
     "状态/已确认",
+    "状态/规格中",
+    "状态/已拆分",
     "状态/开发中",
     "状态/已开发",
     "状态/验证中",
@@ -49,7 +64,15 @@ TEST_STATUS = {
     "状态/测试中",
     "状态/已验证",
 }
-ALLOWED_STATUS = SCHEME_STATUS | TEST_STATUS
+SLICE_STATUS = {
+    "状态/待开发",
+    "状态/开发中",
+    "状态/待验收",
+    "状态/已验收",
+}
+VOLUME_TAGS = {"体量/小", "体量/大"}
+SCHEME_NEEDS_VOLUME = SCHEME_STATUS_ACTIVE - {"状态/方案中"}
+ALLOWED_STATUS = SCHEME_STATUS | TEST_STATUS | SLICE_STATUS
 
 SKIP_MD_PREFIXES = ("http://", "https://", "mailto:", "#")
 # 说明性占位，不当作真实笔记
@@ -63,6 +86,10 @@ PLACEHOLDER_WIKILINKS = {
     "能力底图-xxx",
     "能力底图-其他主题",
     "path/name",
+    "方案stem-01-xxx",
+    "方案stem-02-yyy",
+    "00-规格-短名",
+    "01-短名",
 }
 FENCE_RE = re.compile(r"```.*?```", re.DOTALL)
 INLINE_CODE_RE = re.compile(r"`[^`]+`")
@@ -181,9 +208,25 @@ def is_active_scheme(path: Path, docs_root: Path) -> bool:
         return False
     if "_archive" in parts:
         return False
+    if "切片" in parts:
+        return False
     if is_capability_map(path) or is_index_file(path):
         return False
     return True
+
+
+def is_slice_doc(path: Path, meta: dict) -> bool:
+    tags = meta.get("tags") or []
+    if isinstance(tags, list) and "切片" in tags:
+        return True
+    return "切片" in path.parts and path.name.endswith(".md") and "-00-规格" not in path.name
+
+
+def is_spec_doc(path: Path, meta: dict) -> bool:
+    tags = meta.get("tags") or []
+    if isinstance(tags, list) and "规格" in tags:
+        return True
+    return "切片" in path.parts and "-00-规格" in path.name
 
 
 def check_config_and_themes(cfg: dict, docs_root: Path, report: Report) -> None:
@@ -332,6 +375,9 @@ def check_capability_map_tags(path: Path, meta: dict, body: str, report: Report)
     section_status = section1_statuses(body)
     allowed_cells = {
         "状态/方案中",
+        "状态/已确认",
+        "状态/规格中",
+        "状态/已拆分",
         "状态/开发中",
         "状态/已开发",
         "状态/验证中",
@@ -368,8 +414,166 @@ def check_active_scheme(path: Path, meta: dict, body: str, report: Report) -> No
             path,
             f"active scheme status invalid: {status[0]}",
         )
+    volumes = [t for t in str_tags if t in VOLUME_TAGS]
+    if status and status[0] in SCHEME_NEEDS_VOLUME:
+        if len(volumes) != 1:
+            report.add(
+                "error",
+                "volume_tag",
+                path,
+                f"已确认及之后须有且仅有一个 体量/小|大, got {volumes}",
+            )
+        elif volumes[0] == "体量/小" and status[0] in ("状态/规格中", "状态/已拆分"):
+            report.add(
+                "error",
+                "status_skip",
+                path,
+                "体量/小 禁止进入 规格中/已拆分",
+            )
+        elif volumes[0] == "体量/大" and status[0] == "状态/已开发":
+            check_large_scheme_slices_done(path, report)
     if status and status[0] in ("状态/落地中", "状态/已落地"):
         check_scheme_landed_gate(path, body, report)
+
+
+def scheme_slice_dir(scheme_path: Path) -> Path:
+    return scheme_path.parent / "切片" / scheme_path.stem
+
+
+def check_large_scheme_slices_done(path: Path, report: Report) -> None:
+    sdir = scheme_slice_dir(path)
+    if not sdir.is_dir():
+        report.add(
+            "error",
+            "status_skip",
+            path,
+            f"体量/大 已开发但缺少切片目录: {_rel(sdir)}",
+        )
+        return
+    pending: list[str] = []
+    found = False
+    for sp in sorted(sdir.glob("*.md")):
+        try:
+            meta, _ = parse_front_matter(sp.read_text(encoding="utf-8"))
+        except OSError:
+            continue
+        if is_spec_doc(sp, meta):
+            continue
+        if not is_slice_doc(sp, meta):
+            continue
+        found = True
+        tags = meta.get("tags") or []
+        st = [t for t in tags if isinstance(t, str) and t.startswith("状态/")]
+        if st != ["状态/已验收"]:
+            pending.append(f"{sp.name}:{st}")
+    if not found:
+        report.add(
+            "error",
+            "status_skip",
+            path,
+            "体量/大 已开发但切片目录无切片文",
+        )
+    elif pending:
+        report.add(
+            "error",
+            "status_skip",
+            path,
+            "体量/大 已开发但尚有未已验收切片: " + ", ".join(pending),
+        )
+
+
+def parse_blocked_by(body: str) -> list[str]:
+    stems: list[str] = []
+    for line in body.splitlines():
+        if "Blocked by" not in line and "blocked by" not in line.lower():
+            continue
+        for m in WIKILINK_RE.finditer(line):
+            stems.append(wikilink_target(m.group(1)))
+        break
+    return [s for s in stems if s and s not in PLACEHOLDER_WIKILINKS]
+
+
+def check_slice_doc(path: Path, meta: dict, body: str, report: Report) -> None:
+    tags = meta.get("tags") or []
+    if not isinstance(tags, list):
+        tags = []
+    str_tags = [t for t in tags if isinstance(t, str)]
+    status = [t for t in str_tags if t.startswith("状态/")]
+    if len(status) != 1 or status[0] not in SLICE_STATUS:
+        report.add(
+            "error",
+            "status_tag",
+            path,
+            f"切片须有且仅有一个状态 待开发|开发中|待验收|已验收, got {status}",
+        )
+    if status and status[0] == "状态/待验收":
+        has_demo = bool(re.search(r"Demo\s*步骤|###\s*Demo", body, re.I))
+        has_self = bool(re.search(r"自测摘要", body))
+        if not has_demo or not has_self:
+            report.add(
+                "error",
+                "slice_handoff",
+                path,
+                "待验收须含 Demo 步骤与自测摘要",
+            )
+
+
+def check_slice_dags(docs_root: Path, report: Report) -> None:
+    """按切片/<方案stem>/ 目录检测 Blocked by 成环与断链。"""
+    scheme_root = docs_root / "方案"
+    if not scheme_root.is_dir():
+        return
+    for slice_root in scheme_root.rglob("切片"):
+        if not slice_root.is_dir() or "_archive" in slice_root.parts:
+            continue
+        for stem_dir in sorted(p for p in slice_root.iterdir() if p.is_dir()):
+            nodes: dict[str, Path] = {}
+            edges: dict[str, list[str]] = {}
+            for sp in sorted(stem_dir.glob("*.md")):
+                try:
+                    meta, body = parse_front_matter(sp.read_text(encoding="utf-8"))
+                except OSError:
+                    continue
+                if is_spec_doc(sp, meta) or not is_slice_doc(sp, meta):
+                    continue
+                nodes[sp.stem] = sp
+                edges[sp.stem] = parse_blocked_by(body)
+            for src, deps in edges.items():
+                for dep in deps:
+                    if dep not in nodes:
+                        report.add(
+                            "error",
+                            "slice_blocker",
+                            nodes[src],
+                            f"Blocked by 引用不存在的切片: {dep}",
+                        )
+            # cycle detect
+            WHITE, GRAY, BLACK = 0, 1, 2
+            color = {n: WHITE for n in nodes}
+
+            def dfs(u: str, stack: list[str]) -> bool:
+                color[u] = GRAY
+                stack.append(u)
+                for v in edges.get(u, []):
+                    if v not in nodes:
+                        continue
+                    if color[v] == GRAY:
+                        report.add(
+                            "error",
+                            "slice_cycle",
+                            nodes[u],
+                            f"Blocked by 成环: {' → '.join(stack + [v])}",
+                        )
+                        return True
+                    if color[v] == WHITE and dfs(v, stack):
+                        return True
+                stack.pop()
+                color[u] = BLACK
+                return False
+
+            for n in nodes:
+                if color[n] == WHITE:
+                    dfs(n, [])
 
 
 def check_scheme_landed_gate(path: Path, body: str, report: Report) -> None:
@@ -495,6 +699,8 @@ def run(docs_root: Path, cfg: dict) -> Report:
             check_capability_map_tags(path, meta, body, report)
         if is_active_scheme(path, docs_root):
             check_active_scheme(path, meta, body, report)
+        if is_slice_doc(path, meta):
+            check_slice_doc(path, meta, body, report)
         if in_archive(path, docs_root) and path.name.endswith(".md"):
             try:
                 rel = path.resolve().relative_to((docs_root / "_archive" / "方案").resolve())
@@ -506,6 +712,8 @@ def run(docs_root: Path, cfg: dict) -> Report:
             isinstance(meta.get("tags"), list) and "测试" in meta.get("tags", [])
         ):
             check_test_doc(path, meta, report)
+
+    check_slice_dags(docs_root, report)
 
     return report
 

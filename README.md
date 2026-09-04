@@ -35,23 +35,23 @@ capmap-skills 的解法：
 ### 闭环
 
 ```text
-方案（决策）     capmap-scheme
+方案（决策+体量）  capmap-scheme
+      │
+      ├─【小】────────────────────────────┐
+      └─【大】spec → slice → gate（点名）──┤
+                                          ↓
+开发收尾              capmap-dev
       ↓
-开发（代码）     领域 skill + capmap-dev     ← 底图 §1/§2「已开发」
-      ↓
-测试             capmap-test
-      ↓
-规范             capmap-norm
-      ↓
-归档             capmap-archive
+测试 / 规范 / 归档    capmap-test → norm → archive
       ↑
-反补             capmap-backfill             ← 任意时刻
+反补                  capmap-backfill
 ```
 
-方案主状态（**禁止跳步**：未「已验证」不得「落地中 / 已落地」）：
+方案主状态（**禁止跳步**；大需求多 `规格中`→`已拆分`）：
 
 ```text
-方案中 → 已确认 → 开发中 → 已开发 → 验证中 → 已验证 → 落地中 → 已落地 → 已归档
+小：方案中 → 已确认 → 开发中 → 已开发 → 验证中 → 已验证 → 落地中 → 已落地 → 已归档
+大：方案中 → 已确认 → 规格中 → 已拆分 → 开发中 → 已开发 → …（同上）
 ```
 
 ### 套件
@@ -60,8 +60,11 @@ capmap-skills 的解法：
 |-------|------|
 | `capmap-system` | 总入口、硬规则、契约 reference |
 | `capmap-init` | `docs_root`、骨架、`capmap.yaml`、Obsidian 颜色组 |
-| `capmap-scheme` | 写/改进行中方案 |
-| `capmap-dev` | 开发完成后更新底图 |
+| `capmap-scheme` | 写/改方案；升已确认时体量判断+询问 |
+| `capmap-spec` | 大需求：执行规格 |
+| `capmap-slice` | 大需求：垂直切片 DAG；推荐运行模式后停住 |
+| `capmap-gate` | 大需求：frontier / 点名开干 / 交票验收 |
+| `capmap-dev` | 开发完成后更新底图（大：须切片全验收） |
 | `capmap-test` | 测试计划与记录 |
 | `capmap-norm` | 长期使用 / 配置规范 |
 | `capmap-backfill` | 从 git 反补底图 §4 |
@@ -147,7 +150,10 @@ done
 | 你说 | 通常触发 |
 |------|----------|
 | 「初始化文档目录」 | `capmap-init` |
-| 「写个方案 / 需求又变了」 | `capmap-scheme` |
+| 「写方案 / 需求又变了」 | `capmap-scheme` |
+| 「写规格」 | `capmap-spec`（体量/大） |
+| 「拆切片」 | `capmap-slice` |
+| 「看 frontier / 开 01 / 验收通过」 | `capmap-gate` |
 | 「功能开发完了，更新底图」 | `capmap-dev` |
 | 「写测试点 / 测试通过记一下」 | `capmap-test` |
 | 「写调用约定 / 配置规范」 | `capmap-norm` |
@@ -157,7 +163,10 @@ done
 
 不确定阶段时说「按 capmap 来」→ `capmap-system`。
 
-**日常节奏**：init → scheme（已确认）→ 编码 → dev → test → norm → archive；随时 backfill；改完文档跑 lint。
+**日常节奏**：  
+- **小**：init → scheme（已确认+体量/小）→ 编码 → dev → test → norm → archive  
+- **大**：scheme（体量/大）→ spec → slice（推荐模式后停住）→ **你点名** → gate 循环 → 全验收 → dev → test → …  
+随时 backfill；改完文档跑 lint。
 
 Obsidian 打开业务仓的 `docs_root` 即可看图谱（颜色按状态 Tag 区分）。
 
@@ -173,10 +182,11 @@ python .agents/skills/capmap-lint/capmap_lint.py --strict
 
 1. 真相源 = **能力底图**，不是全局变更台账  
 2. `docs_root` **名任意**，以 `capmap.yaml` 为准  
-3. 方案必须有 `## 变更记录`；归档不留 stub  
-4. 进度 Tag 挂在**方案**上；能力底图禁止 `状态/*`  
-5. **禁止跳步**：未「已验证」不得「落地中 / 已落地」  
-6. Obsidian：`[[唯一文件名]]` + Markdown 旁路；init 写入 `graph.json` 颜色组  
+3. 方案必须有 **`## 变更记录`**；归档不留 stub  
+4. 进度 Tag 挂在**方案**上；切片用类型 `切片`；能力底图禁止状态 Tag  
+5. **禁止跳步**：验证门 + 大需求规格/拆分门 + 切片全验收才已开发  
+6. 切片落盘：`方案/<主题>/切片/<方案stem>/` + 唯一文件名；用户点名才开跑  
+7. Obsidian：`[[唯一文件名]]` + Markdown 旁路；init 写入 `graph.json` 颜色组  
 
 ## 本仓库
 

@@ -1,10 +1,10 @@
 ---
 name: capmap-system
 description: >-
-  capmap-skills 总入口（能力底图策展，非普通 docs 操作）：方案→开发标识→测试→使用规范→归档；
+  capmap-skills 总入口（能力底图策展，非普通 docs 操作）：方案→（大：规格/切片/门禁）→开发标识→测试→使用规范→归档；
   git 反补、docs_root、capmap-lint。配置 .agents/skills/capmap-system/capmap.yaml。
   主源仓库 capmap-skills（本套件）。当用户提到 capmap、能力底图、文档体系、测试文档、使用规范、归档、
-  文档 lint、或不确定该用哪个 capmap-* 阶段时使用。各阶段 Skill 可独立触发。
+  文档 lint、规格切片门禁、或不确定该用哪个 capmap-* 阶段时使用。各阶段 Skill 可独立触发。
 ---
 
 # capmap-skills（总入口）
@@ -12,26 +12,32 @@ description: >-
 ## 完整闭环
 
 ```text
-方案文档（决策）     capmap-scheme
+方案（决策+体量）   capmap-scheme
+        │
+        ├─【小】──────────────────────────────┐
+        │                                     │
+        └─【大】capmap-spec → capmap-slice     │
+                 → capmap-gate（用户点名）──────┤
+                                              ↓
+开发收尾                 capmap-dev   ← 底图 §1/§2「已开发」
         ↓
-开发落地（代码）     领域 skill + capmap-dev   ← 底图 §1/§2 标识「已开发」
+测试验证                 capmap-test
         ↓
-测试验证             capmap-test               ← 测什么 / 影响面 / 记录
+使用规范                 capmap-norm
         ↓
-使用规范             capmap-norm               ← 配置/调用等长期规范
-        ↓
-方案归档             capmap-archive            ← 一次性方案进 _archive
+方案归档                 capmap-archive
         ↑
-日常反补             capmap-backfill           ← 任意时刻用 git 补 §4
+日常反补                 capmap-backfill
 ```
 
 | 阶段产物 | 落点 |
 |----------|------|
 | 设计决策 | `<docs_root>/方案/<主题>/*.md` + `## 变更记录` |
-| 功能完善标识 | 能力底图 §1 状态 + §2 代码路径（代码本身在 `apps/` 等） |
+| 规格/切片（大） | `方案/<主题>/切片/<方案stem>/` |
+| 功能完善标识 | 能力底图 §1 状态 + §2 代码路径 |
 | 测试 | `<docs_root>/测试/<主题>/` |
 | 使用/配置规范 | `<docs_root>/规范/`（长期） |
-| 已结束方案全文 | `<docs_root>/_archive/方案/<主题>/` |
+| 已结束方案全文 | `<docs_root>/_archive/方案/<主题>/`（含切片目录） |
 
 ## 阶段 Skill（均可单独使用）
 
@@ -39,6 +45,9 @@ description: >-
 |------|--------|----------|
 | 初始化 / 对齐 | [capmap-init](../capmap-init/SKILL.md) | 「初始化文档目录」 |
 | 写/改方案 | [capmap-scheme](../capmap-scheme/SKILL.md) | 「写方案」「需求又变了」 |
+| 大：执行规格 | [capmap-spec](../capmap-spec/SKILL.md) | 「写规格」「to-spec」 |
+| 大：拆切片 | [capmap-slice](../capmap-slice/SKILL.md) | 「拆切片」「to-tickets」 |
+| 大：门禁/frontier | [capmap-gate](../capmap-gate/SKILL.md) | 「看 frontier」「开 01」「验收通过」 |
 | 开发完成标识 | [capmap-dev](../capmap-dev/SKILL.md) | 「功能开发完了」「底图标记已开发」 |
 | 测试计划与记录 | [capmap-test](../capmap-test/SKILL.md) | 「写测试点」「回归范围」「测试通过记一下」 |
 | 使用/配置规范 | [capmap-norm](../capmap-norm/SKILL.md) | 「写权限配置规范」「AG-UI 调用约定」 |
@@ -58,7 +67,8 @@ description: >-
 
 1. 匹配上表 → 加载对应阶段 Skill。
 2. 只问规范/闭环怎么走 → 本 Skill + lifecycle。
-3. 写代码 → 领域 skill；**开发收尾**提示 `capmap-dev`，再视需要 `capmap-test` / `capmap-norm` / `capmap-archive`。
+3. **体量/大** 且在规格/拆分/切片执行期 → spec / slice / gate（勿跳过直接 dev）。
+4. 写代码 → 领域 skill；**开发收尾**提示 `capmap-dev`，再视需要 `capmap-test` / `capmap-norm` / `capmap-archive`。
 
 ## 硬规则
 
@@ -66,23 +76,24 @@ description: >-
 2. 禁止全局变更台账 / ledger_id / CL-ID。
 3. 禁止能力底图用 `README.md` 命名。
 4. 进行中方案必须有 **`## 变更记录`**。
-5. **已开发** = 代码合入 + 底图 §1/§2 已更新（见 capmap-dev）。
+5. **已开发** = 代码合入 + 底图 §1/§2 已更新；**体量/大** 另须切片全 `已验收`（见 capmap-dev）。
 6. **长期「怎么用/怎么配」** 进 `规范/`，不进一次性方案；底图 §3 链接之。
 7. **测试计划与记录** 进 `测试/`；底图可链到对应测试文档。
-8. 方案归档宜在「开发标识 +（如需）测试/规范」之后；归档不留 stub。
+8. 方案归档宜在「开发标识 +（如需）测试/规范」之后；归档不留 stub；大需求切片目录随方案归档。
 9. Obsidian Vault = docs_root；`[[wikilink]]` + Markdown 双轨。
-10. 图谱靠**唯一文件名** wikilink（`[[系统架构]]`）；底图↔方案必须双向；禁止模板/`\|` 转义把链接写坏。
-11. 改能力/方案状态时同步 YAML `tags` 中的 `状态/*`（见 [status-tags](reference/status-tags.md)）；禁止只改 Tag 不改底图 §1。
-12. **进度 Tag 挂方案**（`方案中`…`开发中`…`已落地`→`已归档`）；**能力底图禁止 `状态/*`**；测试文 `测试中|已验证`。筛开发中：`tag:#状态/开发中 tag:#方案`。
-13. **主状态禁止跳步（硬）**：未 `已验证` 不得 `落地中`/`已落地`；测试文仍为 `测试中` 时方案不得落地；详见 [status-tags](reference/status-tags.md)。违反 → capmap-lint `status_skip`。
-14. **主源 = capmap-skills 公开仓**；业务仓只同步 Skill/契约，勿在业务仓单边演进。
-15. 改完文档体系相关文件后宜跑 `python .agents/skills/capmap-lint/capmap_lint.py`（见 [capmap-lint](../capmap-lint/SKILL.md)）。
-16. **脚本与配置放在对应 skill 目录**（配置→`capmap-system/`，lint→`capmap-lint/`）；禁止再散落到 `scripts/` 或 `.agents/` 根。
+10. 图谱靠**唯一文件名** wikilink；切片文件名须带 `<方案stem>-` 前缀。
+11. 改能力/方案/切片状态时同步 YAML `状态/*`；禁止只改 Tag 不改底图 §1（能力进度）。
+12. **进度 Tag 挂方案**；切片用类型 `切片`；**能力底图禁止 `状态/*`**；测试文 `测试中|已验证`。
+13. **主状态禁止跳步（硬）**：体量分支 + 验证门；详见 [status-tags](reference/status-tags.md)。违反 → capmap-lint。
+14. **主源 = capmap-skills 公开仓**；业务仓只同步 Skill/契约。
+15. 改完文档体系相关文件后宜跑 `python .agents/skills/capmap-lint/capmap_lint.py`。
+16. **脚本与配置放在对应 skill 目录**；禁止再散落到 `scripts/` 或 `.agents/` 根。
+17. 切片：**用户点名才开跑**；交票须 Demo+自测；Agent 不得自评 `已验收`。
 
 ## 锚点
 
 - 配置：本目录 [`capmap.yaml`](capmap.yaml)
 - Skill：`.agents/skills/capmap-system/`
 - 校验：`.agents/skills/capmap-lint/`（`capmap_lint.py` + `action.yml`）
-- CI 薄入口：`.github/workflows/capmap-lint.yml`（GitHub 强制路径；逻辑在 skill）
+- CI 薄入口：`.github/workflows/capmap-lint.yml`
 - 安装：将本仓 `skills/capmap-*` 拷贝到业务仓 `.agents/skills/`（见仓库 README）

@@ -26,10 +26,15 @@
 | 18 | **状态 Tag（V3 纠偏）**：进度挂**方案**（含开发中/已落地等）；**能力底图禁止状态 Tag**；测试 `测试中→已验证`；归档方案 `已归档` |
 | 19 | **套件命名 = `capmap-skills`**；Skill 前缀 `capmap-*`（入口 `capmap-system`）。弃用易与「文档操作」混淆的 `docs-*` / `docs-capability-*` |
 | 20 | **套件迭代 Vault = 本仓 `docs/`**；业务仓不维护「文档体系」主题；底图+归档方案只在公开仓演进 |
+| 21 | **V4 分支状态机**：`已确认` 时 Agent 建议体量、用户确认后写 `体量/小\|大`；大需求须 `规格中`→`已拆分`→`开发中` |
+| 22 | **V4 执行 skill**：自建 `capmap-spec` / `capmap-slice` / `capmap-gate`；不依赖 mattpocock/skills |
+| 23 | **切片 DAG**：`Blocked by` 无环；frontier 可并行；用户点名才开跑；slice 可推荐模式但禁止主动开跑 |
+| 24 | **切片验收（B）**：交票须 Demo 步骤 + 自测摘要；人确认才 `已验收`；整功能仍走 `capmap-test`；不强制每切片测试文 |
+| 25 | **切片落盘**：`方案/<主题>/切片/<方案stem>/` + 文件名带方案前缀（全局唯一）；随方案归档；进度用类型 `切片` | 同主题共用一个扁平 `切片/`（多方案冲突）；短名无前缀（Obsidian 撞名） |
 
 ## 明确废弃
 
-- `docs/变更台账.md`（及任何全局台账）
+- `docs/变更台账.md`（及任何全局变更台账）
 - `.agents/skills/change-ledger/`
 - `.agents/skills/capability-map/`、`.agents/skills/docs-*`（已迁移至 `capmap-*`）
 - 主题目录下的归档 stub 文件
@@ -40,3 +45,6 @@
 - 方案仅三态、进度只挂底图的旧分轨说法
 - 跨仓打包目录名 `docs-capability-portable/`（现为本公开仓 `capmap-skills`）
 - 业务仓（如 atlas-desk `olympus-docs`）内的「文档体系」主题底图与归档方案（已迁入本仓 `docs/`）
+- 外委 Matt 执行链作为默认；仅改路由不造 skill
+- 切片强制全局串行；Agent 主动开跑 / spawn 多会话
+- 切片口头一句即验收（无 Demo/自测）；每切片强制独立测试文档
