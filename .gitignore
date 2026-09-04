@@ -12,3 +12,4 @@ __pycache__/
 # Local scratch
 _tmp_*.py
 *.log
+docs/

@@ -72,3 +72,4 @@ tags:
 - 筛开发中方案：`tag:#状态/开发中 tag:#方案`
 - 筛落地中方案：`tag:#状态/落地中 tag:#方案`
 - 底图节点：仅 `tag:#能力底图`（一色即可）
+- **图谱颜色组**：`capmap-init` 写入 `<docs_root>/.obsidian/graph.json`（模板见 `capmap-init/assets/obsidian/graph.json`），按上表状态与文档类型着色；打开 Graph 即可按色区分方案阶段

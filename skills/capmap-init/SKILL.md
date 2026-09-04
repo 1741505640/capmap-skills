@@ -42,6 +42,18 @@ description: >-
 | `obsidian` | 默认 true |
 | gitignore | 是否按 docs_root 放开知识文档、只忽略产物 |
 
+## Obsidian（`obsidian: true` 时必做）
+
+模板在本 Skill 目录：[`assets/obsidian/graph.json`](assets/obsidian/graph.json)（图谱颜色组按状态 Tag / 文档类型着色）。
+
+1. 确保目录 `<docs_root>/.obsidian/` 存在  
+2. **写入 / 对齐** `<docs_root>/.obsidian/graph.json`：  
+   - **新建**：整文件复制自 `assets/obsidian/graph.json`  
+   - **对齐**：若已有 `graph.json`，合并补齐缺失的 `colorGroups` 项（按 `query` 去重）；**不要**清空用户已调的力学 / 缩放参数  
+3. 写 `Obsidian使用说明.md`（说明 Vault=`docs_root`、状态 Tag、图谱颜色组已预置）
+
+颜色组与 [status-tags](../capmap-system/reference/status-tags.md) 一致：方案主状态、测试轨、`能力底图` / `规范` / 各类索引等。
+
 ## Checklist
 
 ```
@@ -50,9 +62,9 @@ description: >-
 - [ ] 3. 创建 <docs_root>/ 下：方案/<主题>、测试/<主题>、规范、交付、运维、_archive/方案
 - [ ] 4. 写 文档首页.md、能力总览.md、方案/测试/规范等 *索引.md
 - [ ] 5. 每主题 能力底图-<可读名>.md；文件名唯一；禁止 README 当底图；空壳文首 `tags: [能力底图]`（无 §1 行则暂不写 `状态/*`）
-- [ ] 6. 可选：Obsidian使用说明.md + <docs_root>/.obsidian/（说明含状态 Tag 用法）
+- [ ] 6. 若 obsidian=true：复制 assets/obsidian/graph.json → <docs_root>/.obsidian/graph.json（对齐则合并 colorGroups）；写 Obsidian使用说明.md
 - [ ] 7. gitignore：针对 <docs_root>
-- [ ] 8. 验收：配置可解析；闭环目录（方案/测试/规范/归档）齐全
+- [ ] 8. 验收：配置可解析；闭环目录（方案/测试/规范/归档）齐全；obsidian 时 graph.json 含状态颜色组
 - [ ] 9. 若对齐已有文档：方案文首回链底图；底图 §0/文首用唯一文件名挂方案；无 Obsidian 孤儿
 ```
 

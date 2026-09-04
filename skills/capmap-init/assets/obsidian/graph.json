@@ -1,0 +1,184 @@
+{
+  "collapse-filter": false,
+  "search": "",
+  "showTags": false,
+  "showAttachments": false,
+  "hideUnresolved": true,
+  "showOrphans": false,
+  "collapse-color-groups": false,
+  "colorGroups": [
+    {
+      "query": "tag:#状态/方案中 tag:#方案",
+      "color": {
+        "a": 1,
+        "rgb": 12174031
+      }
+    },
+    {
+      "query": "tag:#状态/已确认 tag:#方案",
+      "color": {
+        "a": 1,
+        "rgb": 13327661
+      }
+    },
+    {
+      "query": "tag:#状态/开发中 tag:#方案",
+      "color": {
+        "a": 1,
+        "rgb": 16096779
+      }
+    },
+    {
+      "query": "tag:#状态/已开发 tag:#方案",
+      "color": {
+        "a": 1,
+        "rgb": 15237498
+      }
+    },
+    {
+      "query": "tag:#状态/验证中 tag:#方案",
+      "color": {
+        "a": 1,
+        "rgb": 3513762
+      }
+    },
+    {
+      "query": "tag:#状态/已验证 tag:#方案",
+      "color": {
+        "a": 1,
+        "rgb": 1357990
+      }
+    },
+    {
+      "query": "tag:#状态/落地中 tag:#方案",
+      "color": {
+        "a": 1,
+        "rgb": 10145074
+      }
+    },
+    {
+      "query": "tag:#状态/已落地 tag:#方案",
+      "color": {
+        "a": 1,
+        "rgb": 5431473
+      }
+    },
+    {
+      "query": "tag:#状态/已归档 tag:#方案",
+      "color": {
+        "a": 1,
+        "rgb": 6974058
+      }
+    },
+    {
+      "query": "tag:#方案",
+      "color": {
+        "a": 1,
+        "rgb": 11053224
+      }
+    },
+    {
+      "query": "tag:#状态/测试中 tag:#测试",
+      "color": {
+        "a": 1,
+        "rgb": 2466515
+      }
+    },
+    {
+      "query": "tag:#状态/已验证 tag:#测试",
+      "color": {
+        "a": 1,
+        "rgb": 2263842
+      }
+    },
+    {
+      "query": "tag:#测试",
+      "color": {
+        "a": 1,
+        "rgb": 3123456
+      }
+    },
+    {
+      "query": "tag:#能力底图",
+      "color": {
+        "a": 1,
+        "rgb": 3900150
+      }
+    },
+    {
+      "query": "tag:#规范",
+      "color": {
+        "a": 1,
+        "rgb": 11041245
+      }
+    },
+    {
+      "query": "tag:#方案索引",
+      "color": {
+        "a": 1,
+        "rgb": 8947848
+      }
+    },
+    {
+      "query": "tag:#测试索引",
+      "color": {
+        "a": 1,
+        "rgb": 8947848
+      }
+    },
+    {
+      "query": "tag:#规范索引",
+      "color": {
+        "a": 1,
+        "rgb": 8947848
+      }
+    },
+    {
+      "query": "tag:#归档索引",
+      "color": {
+        "a": 1,
+        "rgb": 8947848
+      }
+    },
+    {
+      "query": "tag:#文档首页",
+      "color": {
+        "a": 1,
+        "rgb": 6710886
+      }
+    },
+    {
+      "query": "tag:#能力总览",
+      "color": {
+        "a": 1,
+        "rgb": 6710886
+      }
+    },
+    {
+      "query": "tag:#Obsidian说明",
+      "color": {
+        "a": 1,
+        "rgb": 7829367
+      }
+    },
+    {
+      "query": "tag:#运维",
+      "color": {
+        "a": 1,
+        "rgb": 7829367
+      }
+    }
+  ],
+  "collapse-display": false,
+  "showArrow": false,
+  "textFadeMultiplier": -1.5,
+  "nodeSizeMultiplier": 0.85,
+  "lineSizeMultiplier": 2.5,
+  "collapse-forces": false,
+  "centerStrength": 0.34,
+  "repelStrength": 10.8,
+  "linkStrength": 0.65,
+  "linkDistance": 180,
+  "scale": 0.7,
+  "close": true
+}
