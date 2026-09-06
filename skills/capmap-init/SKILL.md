@@ -60,7 +60,7 @@ description: >-
 - [ ] 1. 选定 docs_root（询问 / 探测 / 确认）
 - [ ] 2. 写入 .agents/skills/capmap-system/capmap.yaml
 - [ ] 3. 创建 <docs_root>/ 下：方案/<主题>、测试/<主题>、规范、交付、运维、_archive/方案
-- [ ] 4. 写 文档首页.md、能力总览.md、方案/测试/规范等 *索引.md
+- [ ] 4. 写 文档首页.md（须含 `## Inbox · 未立项` **开干指令**空表，见 templates）、能力总览.md、方案/测试/规范等 *索引.md；对齐时若首页缺该节则补空表，不覆盖已有行
 - [ ] 5. 每主题 能力底图-<可读名>.md；文件名唯一；禁止 README 当底图；空壳文首 `tags: [能力底图]`（无 §1 行则暂不写 `状态/*`）
 - [ ] 6. 若 obsidian=true：复制 assets/obsidian/graph.json → <docs_root>/.obsidian/graph.json（对齐则合并 colorGroups）；写 Obsidian使用说明.md
 - [ ] 7. gitignore：针对 <docs_root>
