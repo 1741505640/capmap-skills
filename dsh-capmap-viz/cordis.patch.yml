@@ -1,0 +1,5 @@
+# 装进 web profile 后的 Host 层。Client 半由 package.json → dsh.client 加载。
+# 不挂 ./invariant：web profile 未提供 ctx.invariants，挂上会一直 pending。
+- insert:
+    - id: capmap-viz
+      name: '@deepseek-ai/dsh-capmap-viz'
