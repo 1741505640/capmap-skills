@@ -12,6 +12,10 @@ __pycache__/
 # Local scratch
 _tmp_*.py
 *.log
+_recover*/
+_recover_*.py
+.npm-cache/
 docs/
 .agents/
 .claude/
+skills-lock.json

@@ -4,7 +4,8 @@ description: >-
   capmap-skills 总入口（能力底图策展，非普通 docs 操作）：方案→（大：规格/切片/门禁）→开发标识→测试→使用规范→归档；
   git 反补、docs_root、capmap-lint。配置 .agents/skills/capmap-system/capmap.yaml。
   主源仓库 capmap-skills（本套件）。当用户提到 capmap、能力底图、文档体系、测试文档、使用规范、归档、
-  文档 lint、规格切片门禁、看 Inbox、先记下、或不确定该用哪个 capmap-* 阶段时使用。各阶段 Skill 可独立触发。
+  文档 lint、规格切片门禁、看 Inbox、先记下、运行时报错/debug 回合、
+  或不确定该用哪个 capmap-* 阶段时使用。各阶段 Skill 可独立触发。
 ---
 
 # capmap-skills（总入口）
@@ -28,6 +29,8 @@ description: >-
 方案归档                 capmap-archive
         ↑
 日常反补                 capmap-backfill
+
+旁路（不进状态机）：capmap-debug ← 贴报错 / 修锅 / debug 回合
 ```
 
 | 阶段产物 | 落点 |
@@ -54,6 +57,7 @@ description: >-
 | git 反补底图 | [capmap-backfill](../capmap-backfill/SKILL.md) | 「反补变更轨迹」 |
 | 方案归档 | [capmap-archive](../capmap-archive/SKILL.md) | 「方案归档」「方案已闭环」 |
 | 文档校验 | [capmap-lint](../capmap-lint/SKILL.md) | 「文档 lint」「检查文档体系」 |
+| 运行时修锅 / debug | [capmap-debug](../capmap-debug/SKILL.md) | 贴 Error/Traceback、「修一下」、继续修；强制清单与 3 次停损 |
 
 > [templates](reference/templates.md) · [status-tags](reference/status-tags.md) · [decisions](reference/decisions.md) · [directory-contract](reference/directory-contract.md) · [project-config](reference/project-config.md) · [lifecycle](reference/lifecycle.md)
 
@@ -70,6 +74,7 @@ description: >-
 3. **体量/大** 且在规格/拆分/切片执行期 → spec / slice / gate（勿跳过直接 dev）。
 4. 写代码 → 领域 skill；**开发收尾**提示 `capmap-dev`，再视需要 `capmap-test` / `capmap-norm` / `capmap-archive`。
 5. 「看 Inbox / 有什么可干的 / 先记下 / 记到 Inbox」→ 读 `<docs_root>/文档首页.md` 的 `## Inbox · 未立项`（协议在 [capmap-scheme](../capmap-scheme/SKILL.md)）。**不要**每个新对话默认倒表。
+6. 贴堆栈 / 「报错修一下」 / 「继续修」 / 已在 debug 回合的「继续」→ [capmap-debug](../capmap-debug/SKILL.md)（**不**推进方案/切片 Tag）。
 
 ## 硬规则
 

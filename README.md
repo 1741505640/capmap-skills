@@ -70,6 +70,7 @@ capmap-skills 的解法：
 | `capmap-backfill` | 从 git 反补底图 §4 |
 | `capmap-archive` | 方案归档 |
 | `capmap-lint` | 结构校验 + `action.yml` |
+| `capmap-debug` | 运行时修锅回合：复现/假设/停损；不进状态机 |
 
 契约细节：`skills/capmap-system/reference/`。
 

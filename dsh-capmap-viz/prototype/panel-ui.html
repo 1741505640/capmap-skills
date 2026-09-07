@@ -1,0 +1,1272 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>CapMap 中栏面板 · 样式原型</title>
+  <style>
+    /* 色值对齐 @deepseek-ai/dsh-client-ui-theme design-platform.css · dark */
+    body[data-ds-dark-theme] {
+      --dsw-static-amber-500: rgb(245, 158, 11);
+      --dsw-static-deepseek-300: rgb(183, 200, 254);
+      --dsw-static-deepseek-400: rgb(103, 158, 254);
+      --dsw-static-deepseek-500: rgb(65, 118, 230);
+      --dsw-static-green-500: rgb(34, 197, 94);
+      --dsw-static-neutral-bluish-50: rgb(249, 250, 251);
+      --dsw-static-neutral-bluish-100: rgb(235, 238, 242);
+      --dsw-static-neutral-bluish-300: rgb(207, 211, 214);
+      --dsw-static-neutral-bluish-400: rgb(173, 178, 184);
+      --dsw-static-neutral-bluish-700: rgb(97, 102, 107);
+      --dsw-static-neutral-bluish-750: rgb(67, 69, 74);
+      --dsw-static-neutral-bluish-800: rgb(53, 54, 56);
+      --dsw-static-neutral-bluish-850: rgb(44, 44, 46);
+      --dsw-static-neutral-bluish-875: rgb(35, 35, 36);
+      --dsw-static-neutral-bluish-900: rgb(27, 27, 28);
+      --dsw-static-neutral-bluish-950: rgb(21, 21, 23);
+      --dsw-static-neutral-800: rgb(41, 41, 41);
+
+      --dsw-alias-bg-base: var(--dsw-static-neutral-bluish-950);
+      --dsw-alias-bg-layer-1: var(--dsw-static-neutral-bluish-875);
+      --dsw-alias-bg-layer-2: var(--dsw-static-neutral-bluish-850);
+      --dsw-alias-bg-layer-3: var(--dsw-static-neutral-bluish-800);
+      --dsw-alias-bg-mask-1: rgba(0, 0, 0, 0.5);
+      --dsw-alias-bg-overlay: var(--dsw-static-neutral-bluish-700);
+      --dsw-alias-border-l2: rgba(255, 255, 255, 0.12);
+      --dsw-alias-border-l3: rgba(255, 255, 255, 0.16);
+      --dsw-alias-button-elevated-fill: var(--dsw-static-neutral-bluish-750);
+      --dsw-alias-button-info-fill: var(--dsw-static-deepseek-400);
+      --dsw-alias-interactive-bg-active: rgba(255, 255, 255, 0.14);
+      --dsw-alias-interactive-bg-hover: rgba(255, 255, 255, 0.08);
+      --dsw-alias-label-primary: var(--dsw-static-neutral-bluish-50);
+      --dsw-alias-label-secondary: var(--dsw-static-neutral-bluish-300);
+      --dsw-alias-label-tertiary: var(--dsw-static-neutral-bluish-400);
+      --dsw-alias-link: var(--dsw-static-deepseek-400);
+      --dsw-alias-markdown-inline-code: var(--dsw-static-neutral-800);
+      --dsw-alias-markdown-tag: var(--dsw-static-neutral-bluish-850);
+      --dsw-alias-state-business-tertiary: rgb(52, 65, 91);
+      --dsw-specific-input-major: var(--dsw-static-neutral-bluish-850);
+      --dsw-specific-menu: var(--dsw-alias-bg-layer-3);
+      --dsw-specific-sidebar-fill: var(--dsw-static-neutral-bluish-900);
+      --dsw-specific-sidebar-nav-item-active: var(--dsw-static-neutral-bluish-750);
+
+      --type-map: var(--dsw-static-deepseek-400);
+      --type-scheme: var(--dsw-static-green-500);
+      --type-test: var(--dsw-static-amber-500);
+      --type-norm: var(--dsw-static-deepseek-300);
+      --status-doing: var(--dsw-static-deepseek-400);
+      --status-done: var(--dsw-static-green-500);
+      --radius: 8px;
+      --font: ui-sans-serif, system-ui, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+    }
+
+    * { box-sizing: border-box; }
+    html, body { height: 100%; margin: 0; }
+    body {
+      font-family: var(--font);
+      background: var(--dsw-alias-bg-base);
+      color: var(--dsw-alias-label-primary);
+    }
+
+    .page {
+      min-height: 100%;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .stage-bar {
+      flex: none;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 16px;
+      background: var(--dsw-specific-sidebar-fill);
+      border-bottom: 1px solid var(--dsw-alias-border-l2);
+      font-size: 12px;
+      color: var(--dsw-alias-label-secondary);
+    }
+    .stage-bar strong { color: var(--dsw-alias-label-primary); font-weight: 600; }
+    .stage-bar .sp { flex: 1; }
+    .seg {
+      display: inline-flex;
+      border: 1px solid var(--dsw-alias-border-l2);
+      border-radius: 6px;
+      overflow: hidden;
+    }
+    .seg button {
+      appearance: none;
+      border: 0;
+      background: transparent;
+      color: var(--dsw-alias-label-secondary);
+      font: inherit;
+      padding: 5px 10px;
+      cursor: pointer;
+    }
+    .seg button + button { border-left: 1px solid var(--dsw-alias-border-l2); }
+    .seg button.on {
+      background: var(--dsw-alias-interactive-bg-active);
+      color: var(--dsw-alias-label-primary);
+    }
+
+    .dsh {
+      flex: 1;
+      display: flex;
+      min-height: 0;
+      margin: 16px auto 24px;
+      width: calc(48px + var(--center, 860px));
+      max-width: calc(100% - 32px);
+      height: 640px;
+      border: 1px solid var(--dsw-alias-border-l2);
+      border-radius: 8px;
+      overflow: hidden;
+      background: var(--dsw-alias-bg-base);
+    }
+
+    .nav {
+      width: 48px;
+      flex: none;
+      background: var(--dsw-specific-sidebar-fill);
+      border-right: 1px solid var(--dsw-alias-border-l2);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 12px 0;
+      gap: 8px;
+    }
+    .nav-logo {
+      width: 28px;
+      height: 28px;
+      border-radius: 7px;
+      background: var(--dsw-static-deepseek-500);
+    }
+    .nav-item {
+      width: 36px;
+      height: 36px;
+      border-radius: 8px;
+      display: grid;
+      place-items: center;
+      color: var(--dsw-alias-label-secondary);
+      font-size: 11px;
+      font-weight: 600;
+    }
+    .nav-item.on {
+      background: var(--dsw-specific-sidebar-nav-item-active);
+      color: var(--dsw-alias-label-primary);
+    }
+
+    .center {
+      flex: 1;
+      min-width: 0;
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      background: var(--dsw-alias-bg-base);
+    }
+
+    .topbar {
+      height: 40px;
+      flex: none;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 0 10px;
+      border-bottom: 1px solid var(--dsw-alias-border-l2);
+      background: var(--dsw-alias-bg-layer-1);
+    }
+    .title {
+      font-size: 13px;
+      font-weight: 600;
+      letter-spacing: 0.01em;
+    }
+    .chip {
+      max-width: 148px;
+      height: 24px;
+      padding: 0 8px;
+      border: 1px solid var(--dsw-alias-border-l2);
+      border-radius: 6px;
+      background: var(--dsw-specific-input-major);
+      color: var(--dsw-alias-label-primary);
+      font-size: 11px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      cursor: pointer;
+    }
+    .search {
+      width: 168px;
+      height: 28px;
+      padding: 0 10px;
+      border: 1px solid var(--dsw-alias-border-l2);
+      border-radius: 6px;
+      background: var(--dsw-specific-input-major);
+      color: var(--dsw-alias-label-primary);
+      font-size: 12px;
+      outline: none;
+    }
+    .search::placeholder { color: var(--dsw-alias-label-tertiary); }
+    .grow { flex: 1; min-width: 8px; }
+
+    .btn {
+      appearance: none;
+      height: 28px;
+      padding: 0 10px;
+      border-radius: 6px;
+      font: 12px/1 var(--font);
+      cursor: pointer;
+    }
+    .btn-ghost {
+      border: 0;
+      background: transparent;
+      color: var(--dsw-alias-label-secondary);
+    }
+    .btn-ghost:hover { background: var(--dsw-alias-interactive-bg-hover); color: var(--dsw-alias-label-primary); }
+    .btn-sec {
+      border: 1px solid var(--dsw-alias-border-l2);
+      background: var(--dsw-alias-button-elevated-fill);
+      color: var(--dsw-alias-label-primary);
+    }
+    .btn-sec.on {
+      background: var(--dsw-alias-interactive-bg-active);
+    }
+
+    .filters {
+      display: none;
+      gap: 8px;
+      align-items: center;
+      padding: 6px 10px;
+      border-bottom: 1px solid var(--dsw-alias-border-l2);
+      background: var(--dsw-alias-bg-layer-1);
+    }
+    .filters.open { display: flex; }
+    .filters select {
+      height: 28px;
+      border-radius: 6px;
+      border: 1px solid var(--dsw-alias-border-l2);
+      background: var(--dsw-specific-input-major);
+      color: var(--dsw-alias-label-primary);
+      font-size: 12px;
+      padding: 0 8px;
+    }
+
+    .main {
+      flex: 1;
+      min-height: 0;
+      display: flex;
+      position: relative;
+    }
+
+    .rail {
+      width: 36px;
+      flex: none;
+      border-right: 1px solid var(--dsw-alias-border-l2);
+      background: var(--dsw-alias-bg-layer-1);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding-top: 8px;
+      gap: 6px;
+    }
+    .rail-btn {
+      width: 28px;
+      height: 28px;
+      border-radius: 6px;
+      border: 1px solid var(--dsw-alias-border-l2);
+      background: var(--dsw-alias-button-elevated-fill);
+      color: var(--dsw-alias-label-secondary);
+      font-size: 11px;
+      cursor: pointer;
+    }
+    .rail-btn.on {
+      border-color: var(--dsw-alias-border-l3);
+      color: var(--dsw-alias-label-primary);
+      background: var(--dsw-specific-sidebar-nav-item-active);
+    }
+
+    .board, .detail {
+      flex: none;
+      overflow: auto;
+      background: var(--dsw-alias-bg-layer-1);
+    }
+    .board {
+      width: 240px;
+      border-right: 1px solid var(--dsw-alias-border-l3);
+      display: none;
+    }
+    .board.open { display: block; }
+    .tree {
+      width: 268px;
+      border-right: 1px solid var(--dsw-alias-border-l2);
+      display: none;
+      background: var(--dsw-alias-bg-layer-1);
+      overflow: hidden;
+      flex: none;
+      flex-direction: column;
+    }
+    .tree.open { display: flex; }
+    .tree-scroll { flex: 1; min-height: 0; overflow: auto; }
+    .tree-hd {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 12px 6px;
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--dsw-alias-label-secondary);
+    }
+    .tree-theme {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      width: 100%;
+      border: 0;
+      background: transparent;
+      color: var(--dsw-alias-label-primary);
+      padding: 6px 10px;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      text-align: left;
+    }
+    .tree-theme:hover { background: var(--dsw-alias-interactive-bg-hover); }
+    .caret {
+      width: 6px;
+      height: 6px;
+      flex: none;
+      border-right: 1.5px solid var(--dsw-alias-label-tertiary);
+      border-bottom: 1.5px solid var(--dsw-alias-label-tertiary);
+      transform: rotate(-45deg);
+      margin: 0 2px 2px 2px;
+    }
+    .tree-theme.open .caret { transform: rotate(45deg); margin-bottom: 4px; }
+    .tree-theme .count {
+      margin-left: auto;
+      font-size: 10px;
+      font-weight: 500;
+      color: var(--dsw-alias-label-tertiary);
+    }
+    .tree-children { display: none; padding: 0 8px 8px 12px; }
+    .tree-theme.open + .tree-children { display: block; }
+    .tree-scheme {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      width: 100%;
+      border: 0;
+      background: transparent;
+      color: var(--dsw-alias-label-primary);
+      padding: 5px 8px;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      text-align: left;
+      border-radius: 6px;
+    }
+    .tree-scheme:hover { background: var(--dsw-alias-interactive-bg-hover); }
+    .tree-scheme.open .caret { transform: rotate(45deg); margin-bottom: 4px; }
+    .tree-scheme.open + .tree-children { display: block; }
+    .tree-scheme .count,
+    .tree-scheme .st {
+      margin-left: auto;
+      font-size: 10px;
+      font-weight: 500;
+      color: var(--dsw-alias-label-tertiary);
+    }
+    .tree-kind {
+      font-size: 10px;
+      font-weight: 600;
+      color: var(--dsw-alias-label-tertiary);
+      padding: 6px 8px 2px;
+      letter-spacing: 0.04em;
+    }
+    .tree-children.nest { padding-left: 10px; }
+    .tree-leaf {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      width: 100%;
+      border: 0;
+      background: transparent;
+      color: var(--dsw-alias-label-primary);
+      padding: 5px 8px;
+      border-radius: 6px;
+      font-size: 12px;
+      cursor: pointer;
+      text-align: left;
+    }
+    .tree-leaf:hover { background: var(--dsw-alias-interactive-bg-hover); }
+    .tree-leaf.active { background: var(--dsw-alias-interactive-bg-active); }
+    .tree-leaf .dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      flex: none;
+    }
+    .tree-leaf .dot.map { background: var(--type-map); }
+    .tree-leaf .dot.scheme { background: var(--type-scheme); }
+    .tree-leaf .dot.test { background: var(--type-test); }
+    .tree-leaf .dot.norm { background: var(--type-norm); }
+    .tree-leaf .dot.index {
+      background: var(--dsw-alias-label-tertiary);
+      border-radius: 2px;
+    }
+    .tree-leaf .name {
+      flex: 1;
+      min-width: 0;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    .tree-leaf .st {
+      flex: none;
+      font-size: 10px;
+      color: var(--dsw-alias-label-tertiary);
+    }
+    .cap-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 5px 8px;
+      font-size: 12px;
+      color: var(--dsw-alias-label-primary);
+    }
+    .cap-row .st { margin-left: auto; font-size: 10px; color: var(--dsw-alias-label-tertiary); }
+    .life {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      width: 100%;
+      border: 0;
+      background: transparent;
+      padding: 5px 8px;
+      font-size: 12px;
+      color: var(--dsw-alias-label-primary);
+      cursor: pointer;
+      text-align: left;
+    }
+    .life > span:first-child {
+      width: 42px;
+      flex: none;
+      font-size: 11px;
+    }
+    .life .bar {
+      flex: 1;
+      height: 4px;
+      border-radius: 99px;
+      background: var(--dsw-alias-interactive-bg-hover);
+      overflow: hidden;
+    }
+    .life .bar > i {
+      display: block;
+      height: 100%;
+      background: var(--dsw-alias-button-info-fill);
+      border-radius: 99px;
+    }
+    .life .n {
+      width: 18px;
+      text-align: right;
+      font-size: 11px;
+      color: var(--dsw-alias-label-tertiary);
+    }
+    .detail {
+      width: 260px;
+      border-left: 1px solid var(--dsw-alias-border-l3);
+      display: none;
+      padding: 12px;
+    }
+    .detail.open { display: block; }
+
+    .sec {
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--dsw-alias-label-secondary);
+      padding: 10px 12px 4px;
+    }
+    .row-btn {
+      display: block;
+      width: 100%;
+      text-align: left;
+      border: 0;
+      background: transparent;
+      color: var(--dsw-alias-label-primary);
+      padding: 8px 12px;
+      font-size: 12px;
+      cursor: pointer;
+    }
+    .row-btn:hover { background: var(--dsw-alias-interactive-bg-hover); }
+    .row-btn.active { background: var(--dsw-alias-interactive-bg-active); }
+    .row-btn small {
+      display: block;
+      margin-top: 2px;
+      font-size: 10px;
+      color: var(--dsw-alias-label-secondary);
+    }
+    .muted { padding: 4px 12px 10px; font-size: 11px; color: var(--dsw-alias-label-tertiary); }
+
+    .life-block {
+      flex: none;
+      border-top: 1px solid var(--dsw-alias-border-l2);
+      padding: 4px 4px 10px;
+    }
+
+    .graph {
+      flex: 1;
+      min-width: 0;
+      position: relative;
+      background: var(--dsw-alias-bg-base);
+      overflow: hidden;
+    }
+    .graph svg {
+      width: 100%;
+      height: 100%;
+      display: block;
+      transform-origin: center center;
+      transition: transform .12s ease-out;
+    }
+    .hud {
+      position: absolute;
+      right: 10px;
+      bottom: 10px;
+      z-index: 4;
+      width: 188px;
+      padding: 8px;
+      border-radius: 8px;
+      border: 1px solid var(--dsw-alias-border-l2);
+      background: var(--dsw-alias-bg-layer-1);
+    }
+    .hud-zoom {
+      display: flex;
+      gap: 4px;
+      margin-bottom: 8px;
+    }
+    .hud-zoom button {
+      flex: 1;
+      height: 26px;
+      border-radius: 6px;
+      border: 1px solid var(--dsw-alias-border-l2);
+      background: var(--dsw-alias-button-elevated-fill);
+      color: var(--dsw-alias-label-primary);
+      font-size: 12px;
+      cursor: pointer;
+    }
+    .hud-zoom button:hover { background: var(--dsw-alias-interactive-bg-hover); }
+    .hud label {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin: 6px 0 0;
+      font-size: 10px;
+      color: var(--dsw-alias-label-secondary);
+    }
+    .hud label span { width: 28px; flex: none; }
+    .hud label b {
+      width: 28px;
+      flex: none;
+      text-align: right;
+      font-weight: 500;
+      color: var(--dsw-alias-label-tertiary);
+    }
+    .hud input[type="range"] {
+      flex: 1;
+      min-width: 0;
+      accent-color: var(--dsw-alias-button-info-fill);
+    }
+    .hud-tog {
+      margin-top: 8px;
+      width: 100%;
+      height: 26px;
+      border-radius: 6px;
+      border: 1px solid var(--dsw-alias-border-l2);
+      background: var(--dsw-alias-button-elevated-fill);
+      color: var(--dsw-alias-label-secondary);
+      font-size: 11px;
+      cursor: pointer;
+    }
+    .hud-tog.on {
+      color: var(--dsw-alias-label-primary);
+      background: var(--dsw-alias-interactive-bg-active);
+    }
+    .hud-tip {
+      margin-top: 8px;
+      font-size: 10px;
+      line-height: 1.4;
+      color: var(--dsw-alias-label-tertiary);
+    }
+    .graph.anim .n {
+      animation: drift 2.8s ease-in-out infinite;
+    }
+    .graph.anim .n:nth-of-type(2n) { animation-delay: -.9s; }
+    .graph.anim .n:nth-of-type(3n) { animation-delay: -1.6s; }
+    @keyframes drift {
+      0%, 100% { transform: translate(0, 0); }
+      50% { transform: translate(3px, -4px); }
+    }
+    .cluster-label {
+      fill: var(--dsw-static-deepseek-300);
+      font-size: 11px;
+      font-family: var(--font);
+    }
+    .node-label {
+      fill: var(--dsw-alias-label-secondary);
+      font-size: 11px;
+      font-family: var(--font);
+    }
+
+    .pick {
+      display: none;
+      flex: 1;
+      overflow: auto;
+      padding: 20px 24px;
+    }
+    .pick.open { display: block; }
+    .pick h2 {
+      margin: 0 0 6px;
+      font-size: 14px;
+      font-weight: 600;
+    }
+    .pick p { margin: 0 0 16px; font-size: 12px; color: var(--dsw-alias-label-secondary); }
+    .ws {
+      display: block;
+      width: min(420px, 100%);
+      text-align: left;
+      margin-bottom: 8px;
+      padding: 12px 14px;
+      border-radius: var(--radius);
+      border: 1px solid var(--dsw-alias-border-l2);
+      background: var(--dsw-alias-bg-layer-1);
+      color: inherit;
+      cursor: pointer;
+    }
+    .ws.last { border-color: var(--dsw-alias-button-info-fill); }
+    .ws b { display: block; font-size: 13px; }
+    .ws span { display: block; margin-top: 4px; font-size: 11px; color: var(--dsw-alias-label-secondary); word-break: break-all; }
+
+    .detail h3 {
+      margin: 0 32px 0 0;
+      font-size: 14px;
+      font-weight: 600;
+      line-height: 1.35;
+    }
+    .meta { font-size: 12px; color: var(--dsw-alias-label-secondary); margin: 8px 0; }
+    .path { font-size: 11px; color: var(--dsw-alias-label-tertiary); word-break: break-all; margin-bottom: 10px; }
+    .pill {
+      display: inline-block;
+      font-size: 10px;
+      padding: 1px 6px;
+      border-radius: 999px;
+      border: 1px solid var(--dsw-alias-border-l2);
+      color: var(--dsw-alias-label-secondary);
+      margin-right: 4px;
+    }
+    .neigh { font-size: 12px; padding: 4px 0; cursor: pointer; color: var(--dsw-alias-link); }
+    .neigh:hover { text-decoration: underline; }
+
+    .modal {
+      display: none;
+      position: absolute;
+      inset: 0;
+      z-index: 20;
+      background: var(--dsw-alias-bg-mask-1);
+      align-items: center;
+      justify-content: center;
+      padding: 28px;
+    }
+    .modal.open { display: flex; }
+    .dialog {
+      width: min(680px, 100%);
+      max-height: 86%;
+      overflow: auto;
+      background: var(--dsw-alias-bg-layer-2);
+      border: 1px solid var(--dsw-alias-border-l2);
+      border-radius: 10px;
+    }
+    .dialog-hd {
+      position: sticky;
+      top: 0;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 12px 14px;
+      background: var(--dsw-alias-bg-layer-2);
+      border-bottom: 1px solid var(--dsw-alias-border-l2);
+    }
+    .dialog-hd .fn {
+      font-size: 13px;
+      font-weight: 600;
+    }
+    .badge-ro {
+      font-size: 10px;
+      padding: 1px 6px;
+      border-radius: 999px;
+      background: var(--dsw-alias-markdown-tag);
+      color: var(--dsw-alias-label-secondary);
+    }
+    .md {
+      padding: 18px 22px 28px;
+      font-size: 13px;
+      line-height: 1.7;
+      color: var(--dsw-alias-label-primary);
+    }
+    .md h1 {
+      margin: 0 0 8px;
+      font-size: 20px;
+      font-weight: 650;
+      color: var(--dsw-alias-label-primary);
+      letter-spacing: -0.02em;
+    }
+    .md .lead {
+      font-size: 12px;
+      color: var(--dsw-alias-label-secondary);
+      margin-bottom: 16px;
+    }
+    .md h2 {
+      margin: 22px 0 8px;
+      font-size: 14px;
+      font-weight: 650;
+      color: var(--dsw-alias-label-primary);
+      border-bottom: 1px solid var(--dsw-alias-border-l2);
+      padding-bottom: 6px;
+    }
+    .md p { margin: 0 0 10px; }
+    .md ul { margin: 0 0 12px; padding-left: 18px; }
+    .md code {
+      font-family: ui-monospace, "Cascadia Code", Consolas, monospace;
+      font-size: 12px;
+      background: var(--dsw-alias-markdown-inline-code);
+      padding: 1px 5px;
+      border-radius: 4px;
+    }
+    .md table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 12px;
+      margin: 8px 0 14px;
+    }
+    .md th, .md td {
+      border: 1px solid var(--dsw-alias-border-l3);
+      padding: 6px 8px;
+      text-align: left;
+    }
+    .md th { color: var(--dsw-alias-label-secondary); font-weight: 600; background: var(--dsw-alias-bg-base); }
+    .md blockquote {
+      margin: 0 0 12px;
+      padding: 8px 12px;
+      border-left: 3px solid var(--dsw-alias-button-info-fill);
+      background: var(--dsw-alias-state-business-tertiary);
+      color: var(--dsw-alias-label-primary);
+    }
+
+    .hidden { display: none !important; }
+    .more-pop {
+      position: absolute;
+      top: 44px;
+      right: 48px;
+      z-index: 15;
+      min-width: 160px;
+      padding: 6px;
+      background: var(--dsw-specific-menu);
+      border: 1px solid var(--dsw-alias-border-l2);
+      border-radius: 8px;
+    }
+    .more-pop button {
+      display: block;
+      width: 100%;
+      text-align: left;
+      border: 0;
+      background: transparent;
+      color: var(--dsw-alias-label-primary);
+      padding: 7px 8px;
+      border-radius: 6px;
+      font-size: 12px;
+      cursor: pointer;
+    }
+    .more-pop button:hover { background: var(--dsw-alias-interactive-bg-hover); }
+  </style>
+</head>
+<body data-ds-dark-theme>
+  <div class="page">
+    <div class="stage-bar">
+      <strong>样式原型</strong>
+      <span>DSH 中栏 · 不入库实现，只看视觉</span>
+      <div class="seg" id="scenes">
+        <button data-scene="pick">选工作区</button>
+        <button data-scene="graph" class="on">图谱</button>
+        <button data-scene="board">活看板</button>
+        <button data-scene="tree">目录</button>
+        <button data-scene="detail">详情</button>
+        <button data-scene="preview">预览弹窗</button>
+      </div>
+      <div class="sp"></div>
+      中栏
+      <div class="seg" id="widths">
+        <button data-w="720">720</button>
+        <button data-w="860" class="on">860</button>
+        <button data-w="980">980</button>
+      </div>
+    </div>
+
+    <div class="dsh" id="dsh">
+      <aside class="nav">
+        <div class="nav-logo"></div>
+        <div class="nav-item">会话</div>
+        <div class="nav-item on">底图</div>
+      </aside>
+      <section class="center" id="center">
+        <div class="topbar" id="topbar">
+          <span class="title">能力底图</span>
+          <button class="chip" id="chip" title="D:\python\capmap-skills">capmap-skills</button>
+          <input class="search" placeholder="搜索标题 / 文件名" />
+          <div class="grow"></div>
+          <button class="btn btn-sec" id="btnFilter">筛选</button>
+          <button class="btn btn-ghost" id="btnMore">更多</button>
+          <button class="btn btn-ghost">关闭</button>
+        </div>
+        <div class="filters" id="filters">
+          <select><option>主题:全部</option><option>主题:文档体系</option></select>
+          <select><option>类型:全部</option><option>类型:底图</option><option>类型:方案</option><option>类型:测试</option><option>类型:规范</option><option>类型:索引</option><option>类型:归档</option></select>
+          <select><option>状态:全部</option><option>状态:方案中</option><option>状态:已落地</option></select>
+        </div>
+        <div class="more-pop hidden" id="morePop">
+          <button>分簇：开</button>
+          <button>导出 PNG</button>
+          <button>高级：手输路径</button>
+        </div>
+
+        <div class="pick" id="pick">
+          <h2>选择工作区</h2>
+          <p>打开能力底图。上次使用的工作区置顶。</p>
+          <button class="ws last" data-goto="graph">
+            <b>capmap-skills</b>
+            <span>上次使用 · D:\python\capmap-skills</span>
+          </button>
+          <button class="ws" data-goto="graph">
+            <b>atlas-desk</b>
+            <span>D:\python\atlas-desk</span>
+          </button>
+        </div>
+
+        <div class="main" id="workspace">
+          <div class="rail">
+            <button class="rail-btn" id="btnBoard" title="活看板">看</button>
+            <button class="rail-btn" id="btnTree" title="目录">树</button>
+          </div>
+          <aside class="board" id="board">
+            <div class="sec">活看板</div>
+            <div class="sec">frontier 可开（1）</div>
+            <button class="row-btn active" data-goto="detail">
+              CapMap可视化-DSH插件V3
+              <small>方案中 · 可写规格或直接开干</small>
+            </button>
+            <div class="sec">验证门卡住（0）</div>
+            <div class="muted">无卡住项</div>
+            <div class="sec">§1 与 Tag 打架（0）</div>
+            <div class="muted">无打架</div>
+          </aside>
+          <aside class="tree" id="tree">
+            <div class="tree-hd">目录</div>
+            <div class="tree-scroll">
+            <button type="button" class="tree-theme open" data-fold>
+              <span class="caret"></span>
+              索引
+              <span class="count">6</span>
+            </button>
+            <div class="tree-children">
+              <button type="button" class="tree-leaf" title="索引">
+                <span class="dot index"></span>
+                <span class="name">文档首页</span>
+              </button>
+              <button type="button" class="tree-leaf" title="索引">
+                <span class="dot index"></span>
+                <span class="name">方案索引</span>
+              </button>
+              <button type="button" class="tree-leaf" title="索引">
+                <span class="dot index"></span>
+                <span class="name">测试索引</span>
+              </button>
+              <button type="button" class="tree-leaf" title="索引">
+                <span class="dot index"></span>
+                <span class="name">规范索引</span>
+              </button>
+              <button type="button" class="tree-leaf" title="索引">
+                <span class="dot index"></span>
+                <span class="name">归档索引</span>
+              </button>
+              <button type="button" class="tree-leaf" title="索引">
+                <span class="dot index"></span>
+                <span class="name">能力总览</span>
+              </button>
+            </div>
+
+            <div class="tree-kind" style="padding:10px 10px 2px">主题</div>
+            <button type="button" class="tree-theme open" data-fold>
+              <span class="caret"></span>
+              文档体系
+              <span class="count">进行中 1</span>
+            </button>
+            <div class="tree-children">
+              <button type="button" class="tree-leaf" title="底图">
+                <span class="dot map"></span>
+                <span class="name">能力底图-文档能力体系</span>
+              </button>
+
+              <button type="button" class="tree-scheme open" data-fold>
+                <span class="caret"></span>
+                CapMap可视化-DSH插件V3
+                <span class="count">方案中</span>
+              </button>
+              <div class="tree-children nest">
+                <div class="tree-kind">方案</div>
+                <button type="button" class="tree-leaf active" title="方案">
+                  <span class="dot scheme"></span>
+                  <span class="name">CapMap可视化-DSH插件V3</span>
+                  <span class="st">方案中</span>
+                </button>
+              </div>
+
+              <div class="tree-kind">未归组</div>
+              <button type="button" class="tree-leaf" title="无方案链">
+                <span class="dot test"></span>
+                <span class="name">测试-孤立草稿</span>
+                <span class="st">测试中</span>
+              </button>
+
+              <button type="button" class="tree-scheme" data-fold>
+                <span class="caret"></span>
+                落地归档
+                <span class="count">3</span>
+              </button>
+              <div class="tree-children nest">
+                <button type="button" class="tree-scheme" data-fold>
+                  <span class="caret"></span>
+                  CapMap可视化-DSH插件V2
+                  <span class="st">已归档</span>
+                </button>
+                <div class="tree-children nest">
+                  <div class="tree-kind">方案</div>
+                  <button type="button" class="tree-leaf" title="归档方案">
+                    <span class="dot scheme"></span>
+                    <span class="name">CapMap可视化-DSH插件V2</span>
+                    <span class="st">已归档</span>
+                  </button>
+                  <div class="tree-kind">测试</div>
+                  <button type="button" class="tree-leaf" title="测试">
+                    <span class="dot test"></span>
+                    <span class="name">测试-CapMap可视化-DSH插件V2</span>
+                    <span class="st">已验证</span>
+                  </button>
+                  <div class="tree-kind">规范</div>
+                  <button type="button" class="tree-leaf" title="规范">
+                    <span class="dot norm"></span>
+                    <span class="name">安装与使用</span>
+                    <span class="st">已落地</span>
+                  </button>
+                </div>
+                <button type="button" class="tree-scheme" data-fold>
+                  <span class="caret"></span>
+                  CapMap可视化-DSH插件
+                  <span class="st">已归档</span>
+                </button>
+                <div class="tree-children nest">
+                  <div class="tree-kind">方案 / 切片</div>
+                  <button type="button" class="tree-leaf" title="归档方案">
+                    <span class="dot scheme"></span>
+                    <span class="name">CapMap可视化-DSH插件</span>
+                    <span class="st">已归档</span>
+                  </button>
+                  <div class="tree-kind">测试</div>
+                  <button type="button" class="tree-leaf" title="测试">
+                    <span class="dot test"></span>
+                    <span class="name">测试-CapMap可视化-DSH插件</span>
+                    <span class="st">已验证</span>
+                  </button>
+                </div>
+                <button type="button" class="tree-scheme" data-fold>
+                  <span class="caret"></span>
+                  Inbox跨会话接力
+                  <span class="st">已归档</span>
+                </button>
+                <div class="tree-children nest">
+                  <button type="button" class="tree-leaf" title="归档方案">
+                    <span class="dot scheme"></span>
+                    <span class="name">Inbox跨会话接力</span>
+                    <span class="st">已归档</span>
+                  </button>
+                </div>
+              </div>
+            </div>
+            </div>
+            <div class="life-block">
+              <div class="sec" style="padding-top:8px">生命周期</div>
+              <button type="button" class="life on" data-life="方案中">
+                <span>方案中</span>
+                <span class="bar"><i style="width:14%"></i></span>
+                <span class="n">1</span>
+              </button>
+              <button type="button" class="life" data-life="测试中">
+                <span>测试中</span>
+                <span class="bar"><i style="width:14%"></i></span>
+                <span class="n">1</span>
+              </button>
+              <button type="button" class="life" data-life="已验证">
+                <span>已验证</span>
+                <span class="bar"><i style="width:28%"></i></span>
+                <span class="n">2</span>
+              </button>
+              <button type="button" class="life" data-life="已落地">
+                <span>已落地</span>
+                <span class="bar"><i style="width:14%"></i></span>
+                <span class="n">1</span>
+              </button>
+              <button type="button" class="life" data-life="已归档">
+                <span>已归档</span>
+                <span class="bar"><i style="width:42%"></i></span>
+                <span class="n">3</span>
+              </button>
+            </div>
+          </aside>
+          <div class="graph">
+            <svg id="graphSvg" viewBox="0 0 640 480" preserveAspectRatio="xMidYMid meet">
+              <text class="cluster-label" x="120" y="42">文档体系</text>
+              <line x1="160" y1="150" x2="320" y2="120" stroke="rgba(255,255,255,.16)" stroke-width="1.2" />
+              <line x1="320" y1="120" x2="460" y2="168" stroke="rgba(255,255,255,.16)" stroke-width="1.2" />
+              <line x1="320" y1="120" x2="300" y2="280" stroke="rgba(255,255,255,.12)" stroke-width="1.1" />
+              <line x1="160" y1="150" x2="300" y2="280" stroke="rgba(255,255,255,.08)" stroke-width=".8" />
+              <g class="n" data-goto="detail">
+                <circle cx="160" cy="150" r="11" fill="var(--type-map)" stroke="var(--status-done)" stroke-width="2.5" />
+                <text class="node-label" x="160" y="176" text-anchor="middle">能力底图-文档能力体系</text>
+              </g>
+              <g class="n" data-goto="detail">
+                <circle cx="320" cy="120" r="13" fill="var(--type-scheme)" stroke="var(--status-doing)" stroke-width="3" />
+                <text class="node-label" x="320" y="148" text-anchor="middle">CapMap可视化-DSH插件V3</text>
+              </g>
+              <g class="n" data-goto="detail">
+                <circle cx="460" cy="168" r="11" fill="var(--type-test)" stroke="var(--status-done)" stroke-width="2.5" />
+                <text class="node-label" x="460" y="194" text-anchor="middle">测试-CapMap可视化-DSH插件V2</text>
+              </g>
+              <g class="n" data-goto="detail">
+                <circle cx="300" cy="280" r="11" fill="var(--type-norm)" stroke="var(--status-done)" stroke-width="2.5" />
+                <text class="node-label" x="300" y="306" text-anchor="middle">安装与使用</text>
+              </g>
+            </svg>
+            <div class="hud">
+              <div class="hud-zoom">
+                <button type="button" id="hudMinus" title="缩小">−</button>
+                <button type="button" id="hudFit" title="适应">Fit</button>
+                <button type="button" id="hudPlus" title="放大">+</button>
+              </div>
+              <label>斥力 <input id="hudCharge" type="range" min="80" max="400" value="220" /> <b id="hudChargeN">220</b></label>
+              <label>距离 <input id="hudDist" type="range" min="40" max="180" value="80" /> <b id="hudDistN">80</b></label>
+              <label>中心 <input id="hudCenter" type="range" min="0" max="100" value="30" /> <b id="hudCenterN">30</b></label>
+              <label>标签 <input id="hudFade" type="range" min="0" max="100" value="55" /> <b id="hudFadeN">55</b></label>
+              <button type="button" class="hud-tog on" id="hudAnim">动画：开</button>
+              <div class="hud-tip">滚轮缩放 · 拖动画布 · 拖节点。标签阈值随缩放淡出。不搬 local depth / orphan。</div>
+            </div>
+          </div>
+          <aside class="detail" id="detail">
+            <div style="display:flex;align-items:flex-start;gap:8px;">
+              <h3>CapMap可视化-DSH插件V3</h3>
+              <button class="btn btn-ghost" style="margin-left:auto" data-goto="graph">关闭</button>
+            </div>
+            <div class="meta">
+              <span class="pill">方案</span>
+              <span class="pill">方案中</span>
+              <span class="pill">文档体系</span>
+            </div>
+            <div class="path">方案/文档体系/CapMap可视化-DSH插件V3.md</div>
+            <div class="sec" style="padding-left:0">邻接</div>
+            <div class="neigh">能力底图-文档能力体系 · 底图</div>
+            <div class="neigh">CapMap可视化-DSH插件V2 · 归档</div>
+            <div style="height:12px"></div>
+            <button class="btn btn-sec" data-goto="preview">打开源文件</button>
+          </aside>
+        </div>
+
+        <div class="modal" id="modal">
+          <div class="dialog" role="dialog" aria-modal="true">
+            <div class="dialog-hd">
+              <span class="fn">CapMap可视化-DSH插件V3.md</span>
+              <span class="badge-ro">只读</span>
+              <div class="grow"></div>
+              <button class="btn btn-ghost" data-goto="detail">关闭</button>
+            </div>
+            <article class="md">
+              <h1>CapMap 可视化 DSH 插件 V3</h1>
+              <div class="lead">状态：方案中 · 体量待判 · 中栏面板显示优化</div>
+              <blockquote>图谱铺满；活看板 / 详情轻推；打开源文件在本面板弹出可关闭的 Markdown 预览。</blockquote>
+              <h2>已决</h2>
+              <ul>
+                <li>chrome 走 DSH <code>--dsw-alias-*</code>，节点类型色保留</li>
+                <li>分簇默认开，力导向按中栏自适应</li>
+                <li>不依赖 <code>dsh-better-sidebar</code>，不写回文档</li>
+              </ul>
+              <h2>弹窗</h2>
+              <table>
+                <tr><th>项</th><th>约定</th></tr>
+                <tr><td>挂载</td><td>本中栏面板内遮罩，不是全屏 overlay</td></tr>
+                <tr><td>关闭</td><td>X / Esc / 点遮罩</td></tr>
+                <tr><td>正文</td><td>Markdown 只读渲染</td></tr>
+              </table>
+              <p>同时只开一个预览。详情抽屉仍在弹窗后面，关掉预览回到详情。</p>
+            </article>
+          </div>
+        </div>
+      </section>
+    </div>
+  </div>
+
+  <script>
+    const dsh = document.getElementById("dsh");
+    const pick = document.getElementById("pick");
+    const workspace = document.getElementById("workspace");
+    const board = document.getElementById("board");
+    const tree = document.getElementById("tree");
+    const detail = document.getElementById("detail");
+    const modal = document.getElementById("modal");
+    const topbar = document.getElementById("topbar");
+    const filters = document.getElementById("filters");
+    const morePop = document.getElementById("morePop");
+    const btnBoard = document.getElementById("btnBoard");
+    const btnTree = document.getElementById("btnTree");
+    const btnFilter = document.getElementById("btnFilter");
+    const scenes = document.getElementById("scenes");
+
+    function setScene(name) {
+      pick.classList.toggle("open", name === "pick");
+      workspace.classList.toggle("hidden", name === "pick");
+      topbar.querySelector(".chip").classList.toggle("hidden", name === "pick");
+      topbar.querySelector(".search").classList.toggle("hidden", name === "pick");
+      btnFilter.classList.toggle("hidden", name === "pick");
+      document.getElementById("btnMore").classList.toggle("hidden", name === "pick");
+      board.classList.toggle("open", name === "board");
+      tree.classList.toggle("open", name === "tree");
+      btnBoard.classList.toggle("on", name === "board");
+      btnTree.classList.toggle("on", name === "tree");
+      detail.classList.toggle("open", name === "detail" || name === "preview");
+      if (name === "graph") {
+        board.classList.remove("open");
+        tree.classList.remove("open");
+        btnBoard.classList.remove("on");
+        btnTree.classList.remove("on");
+        detail.classList.remove("open");
+      }
+      modal.classList.toggle("open", name === "preview");
+      scenes.querySelectorAll("button").forEach((b) => b.classList.toggle("on", b.dataset.scene === name));
+      morePop.classList.add("hidden");
+    }
+
+    document.querySelectorAll("[data-scene]").forEach((b) => {
+      b.addEventListener("click", () => setScene(b.dataset.scene));
+    });
+    document.querySelectorAll("[data-goto]").forEach((b) => {
+      b.addEventListener("click", (e) => {
+        e.stopPropagation();
+        setScene(b.dataset.goto);
+      });
+    });
+    document.getElementById("chip").addEventListener("click", () => setScene("pick"));
+    btnBoard.addEventListener("click", () => {
+      setScene(board.classList.contains("open") ? "graph" : "board");
+    });
+    btnTree.addEventListener("click", () => {
+      setScene(tree.classList.contains("open") ? "graph" : "tree");
+    });
+    document.querySelectorAll("[data-fold]").forEach((b) => {
+      b.addEventListener("click", () => b.classList.toggle("open"));
+    });
+    document.querySelectorAll(".tree-leaf").forEach((b) => {
+      b.addEventListener("click", () => {
+        document.querySelectorAll(".tree-leaf").forEach((x) => x.classList.remove("active"));
+        b.classList.add("active");
+        detail.classList.add("open");
+      });
+    });
+    btnFilter.addEventListener("click", () => {
+      filters.classList.toggle("open");
+      btnFilter.classList.toggle("on", filters.classList.contains("open"));
+    });
+    document.getElementById("btnMore").addEventListener("click", (e) => {
+      e.stopPropagation();
+      morePop.classList.toggle("hidden");
+    });
+    document.querySelectorAll(".life").forEach((b) => {
+      b.addEventListener("click", () => {
+        const on = b.classList.contains("on");
+        document.querySelectorAll(".life").forEach((x) => x.classList.remove("on"));
+        if (!on) b.classList.add("on");
+        const sel = filters.querySelector("select:last-child");
+        if (sel) sel.selectedIndex = on || !b.dataset.life ? 0 : [...sel.options].findIndex((o) => o.text.includes(b.dataset.life));
+        if (sel && sel.selectedIndex < 0) sel.selectedIndex = 0;
+      });
+    });
+    let gk = 1;
+    const graphEl = document.querySelector(".graph");
+    const graphSvg = document.getElementById("graphSvg");
+    function applyLabels() {
+      const fade = +document.getElementById("hudFade").value;
+      const t = ((100 - fade) / 100) * 1.15;
+      const op = Math.max(0, Math.min(1, (gk - t) / 0.5));
+      document.querySelectorAll(".node-label").forEach((el) => {
+        el.style.opacity = String(op);
+      });
+    }
+    function applyZoom() {
+      graphSvg.style.transform = "scale(" + gk + ")";
+      applyLabels();
+    }
+    document.getElementById("hudPlus").addEventListener("click", () => {
+      gk = Math.min(2.4, gk * 1.12);
+      applyZoom();
+    });
+    document.getElementById("hudMinus").addEventListener("click", () => {
+      gk = Math.max(0.55, gk / 1.12);
+      applyZoom();
+    });
+    document.getElementById("hudFit").addEventListener("click", () => {
+      gk = 1;
+      applyZoom();
+    });
+    graphEl.addEventListener(
+      "wheel",
+      (e) => {
+        e.preventDefault();
+        gk = Math.min(2.4, Math.max(0.55, gk * (e.deltaY > 0 ? 0.92 : 1.08)));
+        applyZoom();
+      },
+      { passive: false },
+    );
+    document.getElementById("hudCharge").addEventListener("input", (e) => {
+      document.getElementById("hudChargeN").textContent = e.target.value;
+    });
+    document.getElementById("hudDist").addEventListener("input", (e) => {
+      document.getElementById("hudDistN").textContent = e.target.value;
+    });
+    document.getElementById("hudCenter").addEventListener("input", (e) => {
+      document.getElementById("hudCenterN").textContent = e.target.value;
+    });
+    document.getElementById("hudFade").addEventListener("input", (e) => {
+      document.getElementById("hudFadeN").textContent = e.target.value;
+      applyLabels();
+    });
+    document.getElementById("hudAnim").addEventListener("click", () => {
+      const on = graphEl.classList.toggle("anim");
+      const btn = document.getElementById("hudAnim");
+      btn.classList.toggle("on", on);
+      btn.textContent = on ? "动画：开" : "动画：关";
+    });
+    graphEl.classList.add("anim");
+    applyLabels();
+    modal.addEventListener("click", (e) => {
+      if (e.target === modal) setScene("detail");
+    });
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "Escape" && modal.classList.contains("open")) setScene("detail");
+    });
+    document.getElementById("widths").addEventListener("click", (e) => {
+      const t = e.target.closest("button");
+      if (!t) return;
+      document.documentElement.style.setProperty("--center", t.dataset.w + "px");
+      document.querySelectorAll("#widths button").forEach((b) => b.classList.toggle("on", b === t));
+    });
+    document.documentElement.style.setProperty("--center", "860px");
+    setScene("tree");
+  </script>
+</body>
+</html>
