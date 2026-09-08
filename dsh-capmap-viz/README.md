@@ -59,7 +59,8 @@ dsh web --dump-config
 
 ```sh
 npm run build
-npm publish --access public
+npm version patch
+npm publish --access public --registry https://registry.npmjs.org
 ```
 
 升版：改 `package.json` 的 `version` 后再 `npm publish`。
