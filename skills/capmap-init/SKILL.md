@@ -2,7 +2,7 @@
 name: capmap-init
 description: >-
   初始化或对齐仓库文档根目录（docs_root 名任意）：选定并写入 .agents/skills/capmap-system/capmap.yaml，
-  创建文档首页、主题能力底图、规范/运维/归档索引、gitignore、可选 Obsidian（含 graph.json 状态颜色组）。
+  创建文档首页、项目全貌、主题能力底图、规范/运维/归档索引、gitignore、可选 Obsidian（含 graph.json 状态颜色组）。
   适用于「初始化 docs」「整理文档目录」「按能力底图体系建文档」「对齐文档结构」时使用。
 ---
 
@@ -42,6 +42,14 @@ description: >-
 | `obsidian` | 默认 true |
 | gitignore | 是否按 docs_root 放开知识文档、只忽略产物 |
 
+## 产物职责（勿混）
+
+| 文件 | 给谁看 | 内容 |
+|------|--------|------|
+| `项目全貌.md` | 人（一页导读） | 项目是什么 / 能力 / 代码 / 怎么用 / 进行到哪；**不逐个翻方案** |
+| `能力总览.md` | 导航索引 | 主题 → 能力底图 → 归档方案 |
+| `能力底图-<可读名>.md` | 策展（Agent+人） | §0-§7 结构化；真相源 |
+
 ## Obsidian（`obsidian: true` 时必做）
 
 模板在本 Skill 目录：[`assets/obsidian/graph.json`](assets/obsidian/graph.json)（图谱颜色组按状态 Tag / 文档类型着色）。
@@ -60,7 +68,7 @@ description: >-
 - [ ] 1. 选定 docs_root（询问 / 探测 / 确认）
 - [ ] 2. 写入 .agents/skills/capmap-system/capmap.yaml
 - [ ] 3. 创建 <docs_root>/ 下：方案/<主题>、测试/<主题>、规范、交付、运维、_archive/方案
-- [ ] 4. 写 文档首页.md（须含 `## Inbox · 未立项` **开干指令**空表，见 templates）、能力总览.md、方案/测试/规范等 *索引.md；对齐时若首页缺该节则补空表，不覆盖已有行
+- [ ] 4. 写 文档首页.md（须含 `## Inbox · 未立项` **开干指令**空表，见 templates）、项目全貌.md（人读导读，见 templates）、能力总览.md、方案/测试/规范等 *索引.md；对齐时若首页缺该节则补空表，不覆盖已有行
 - [ ] 5. 每主题 能力底图-<可读名>.md；文件名唯一；禁止 README 当底图；空壳文首 `tags: [能力底图]`（无 §1 行则暂不写 `状态/*`）
 - [ ] 6. 若 obsidian=true：复制 assets/obsidian/graph.json → <docs_root>/.obsidian/graph.json（对齐则合并 colorGroups）；写 Obsidian使用说明.md
 - [ ] 7. gitignore：针对 <docs_root>

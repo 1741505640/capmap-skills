@@ -1,5 +1,5 @@
 /** CapMap 图模型（Cordis-free）。 */
-export type CapMapNodeType = 'map' | 'scheme' | 'test' | 'norm' | 'index' | 'archive';
+export type CapMapNodeType = 'map' | 'scheme' | 'test' | 'norm' | 'index' | 'archive' | 'overview';
 export interface CapMapNode {
     id: string;
     title: string;

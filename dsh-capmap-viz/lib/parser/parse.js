@@ -139,6 +139,8 @@ function classify(relPosix, tags) {
     }
     if (tags.includes('能力底图') || /\/能力底图-/.test(`/${relPosix}`))
         return 'map';
+    if (tags.includes('项目全貌'))
+        return 'overview';
     // 索引须先于「方案/」「测试/」路径启发，否则 方案索引/测试索引 会被当成方案/测试
     if (tags.includes('文档首页') ||
         tags.includes('归档索引') ||

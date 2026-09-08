@@ -7,6 +7,7 @@ export const TYPE_LABELS: Record<string, string> = {
   index: '索引',
   archive: '归档',
   slice: '切片',
+  overview: '全貌',
 };
 
 export const TYPE_FILTER_OPTIONS: { value: string; label: string }[] = [
@@ -17,6 +18,7 @@ export const TYPE_FILTER_OPTIONS: { value: string; label: string }[] = [
   { value: 'norm', label: '规范' },
   { value: 'index', label: '索引' },
   { value: 'archive', label: '归档' },
+  { value: 'overview', label: '全貌' },
 ];
 
 export function typeLabel(type: string): string {

@@ -159,11 +159,11 @@ export function buildThemeTree(graph: CapMapGraph, themeFilter: string): ThemeBu
   return buckets;
 }
 
-const INDEX_ORDER = ['文档首页', '方案索引', '测试索引', '规范索引', '归档索引', '能力总览'];
+const INDEX_ORDER = ['文档首页', '项目全貌', '方案索引', '测试索引', '规范索引', '归档索引', '能力总览'];
 
 /** 顶层索引节点（与主题同级，不进主题桶）。 */
 export function listIndexNodes(nodes: CapMapNode[]): ThemeTreeLeaf[] {
-  const indexes = nodes.filter((n) => n.type === 'index').map(leafOf);
+  const indexes = nodes.filter((n) => n.type === 'index' || n.type === 'overview').map(leafOf);
   indexes.sort((a, b) => {
     const ia = INDEX_ORDER.findIndex((k) => a.id.includes(k) || a.title.includes(k));
     const ib = INDEX_ORDER.findIndex((k) => b.id.includes(k) || b.title.includes(k));

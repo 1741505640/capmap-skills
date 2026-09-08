@@ -1005,7 +1005,8 @@ window.__ModuleLoader__.load({
 		  test: "#eab308",
 		  norm: "#a855f7",
 		  index: "#9ca3af",
-		  archive: "#6b7280"
+		  archive: "#6b7280",
+		  overview: "#f97316"
 		};
 		var STATUS_STROKE = {
 		  \u65B9\u6848\u4E2D: "#e2e8f0",
@@ -1042,7 +1043,8 @@ window.__ModuleLoader__.load({
 		  norm: "\u89C4\u8303",
 		  index: "\u7D22\u5F15",
 		  archive: "\u5F52\u6863",
-		  slice: "\u5207\u7247"
+		  slice: "\u5207\u7247",
+		  overview: "\u5168\u8C8C"
 		};
 		var TYPE_FILTER_OPTIONS = [
 		  { value: "\u5168\u90E8", label: "\u5168\u90E8" },
@@ -1051,7 +1053,8 @@ window.__ModuleLoader__.load({
 		  { value: "test", label: "\u6D4B\u8BD5" },
 		  { value: "norm", label: "\u89C4\u8303" },
 		  { value: "index", label: "\u7D22\u5F15" },
-		  { value: "archive", label: "\u5F52\u6863" }
+		  { value: "archive", label: "\u5F52\u6863" },
+		  { value: "overview", label: "\u5168\u8C8C" }
 		];
 		function typeLabel(type) {
 		  return TYPE_LABELS[type] ?? type;
@@ -1923,9 +1926,9 @@ window.__ModuleLoader__.load({
 		  }
 		  return buckets;
 		}
-		var INDEX_ORDER = ["\u6587\u6863\u9996\u9875", "\u65B9\u6848\u7D22\u5F15", "\u6D4B\u8BD5\u7D22\u5F15", "\u89C4\u8303\u7D22\u5F15", "\u5F52\u6863\u7D22\u5F15", "\u80FD\u529B\u603B\u89C8"];
+		var INDEX_ORDER = ["\u6587\u6863\u9996\u9875", "\u9879\u76EE\u5168\u8C8C", "\u65B9\u6848\u7D22\u5F15", "\u6D4B\u8BD5\u7D22\u5F15", "\u89C4\u8303\u7D22\u5F15", "\u5F52\u6863\u7D22\u5F15", "\u80FD\u529B\u603B\u89C8"];
 		function listIndexNodes(nodes) {
-		  const indexes = nodes.filter((n) => n.type === "index").map(leafOf);
+		  const indexes = nodes.filter((n) => n.type === "index" || n.type === "overview").map(leafOf);
 		  indexes.sort((a2, b) => {
 		    const ia = INDEX_ORDER.findIndex((k) => a2.id.includes(k) || a2.title.includes(k));
 		    const ib = INDEX_ORDER.findIndex((k) => b.id.includes(k) || b.title.includes(k));

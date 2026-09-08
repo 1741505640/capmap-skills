@@ -225,6 +225,13 @@
       }
     },
     {
+      "query": "tag:#项目全貌",
+      "color": {
+        "a": 1,
+        "rgb": 16347926
+      }
+    },
+    {
       "query": "tag:#Obsidian说明",
       "color": {
         "a": 1,
