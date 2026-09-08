@@ -2,7 +2,7 @@
 
 CapMap 文档体系可视化 DSH 插件（双半）：选中本地工作区 → 读 `capmap.yaml` → 定位 `docs_root` → 渲染 **Obsidian Graph View 风格语义图谱 + 能力面板**。
 
-方案见本仓 `docs/_archive/方案/文档体系/CapMap可视化-DSH插件V3.md`（V1/V2 同目录）。
+方案见本仓 `docs/_archive/方案/文档体系/CapMap可视化-DSH插件V4.md`（V1/V2/V3 同目录）。
 
 ## 目录
 
@@ -87,6 +87,7 @@ npm publish --access public --registry https://registry.npmjs.org
 | norm（规范） | `#a855f7` | 紫 |
 | index（索引） | `#9ca3af` | 灰 |
 | archive（归档路径节点） | `#6b7280` | 深灰 |
+| overview（全貌） | `#f97316` | 橙 |
 | 未知 | `#9ca3af` | 灰（默认） |
 
 ### 状态描边
