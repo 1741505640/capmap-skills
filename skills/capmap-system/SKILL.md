@@ -20,9 +20,9 @@ description: >-
         └─【大】capmap-spec → capmap-slice     │
                  → capmap-gate（用户点名）──────┤
                                               ↓
-开发收尾                 capmap-dev   ← 底图 §1/§2「已开发」
+开发收尾                 capmap-dev   ← 对照方案 →「已开发」→ 询问是否转测试
         ↓
-测试验证                 capmap-test
+测试验证                 capmap-test  ← 用户同意后拍1交测试文→验证中；拍2人测/免测→已验证
         ↓
 使用规范                 capmap-norm
         ↓
@@ -51,8 +51,8 @@ description: >-
 | 大：执行规格 | [capmap-spec](../capmap-spec/SKILL.md) | 「写规格」「to-spec」 |
 | 大：拆切片 | [capmap-slice](../capmap-slice/SKILL.md) | 「拆切片」「to-tickets」 |
 | 大：门禁/frontier | [capmap-gate](../capmap-gate/SKILL.md) | 「看 frontier」「开 01」「验收通过」 |
-| 开发完成标识 | [capmap-dev](../capmap-dev/SKILL.md) | 「功能开发完了」「底图标记已开发」 |
-| 测试计划与记录 | [capmap-test](../capmap-test/SKILL.md) | 「写测试点」「回归范围」「测试通过记一下」 |
+| 开发完成标识 | [capmap-dev](../capmap-dev/SKILL.md) | 「功能开发完了」「底图标记已开发」、编码收尾对照方案 |
+| 测试计划与记录 | [capmap-test](../capmap-test/SKILL.md) | 「写测试点」「转测试」「测过了记一下」；dev 收尾后经询问再进入 |
 | 使用/配置规范 | [capmap-norm](../capmap-norm/SKILL.md) | 「写权限配置规范」「AG-UI 调用约定」 |
 | git 反补底图 | [capmap-backfill](../capmap-backfill/SKILL.md) | 「反补变更轨迹」 |
 | 方案归档 | [capmap-archive](../capmap-archive/SKILL.md) | 「方案归档」「方案已闭环」 |
@@ -72,7 +72,7 @@ description: >-
 1. 匹配上表 → 加载对应阶段 Skill。
 2. 只问规范/闭环怎么走 → 本 Skill + lifecycle。
 3. **体量/大** 且在规格/拆分/切片执行期 → spec / slice / gate（勿跳过直接 dev）。
-4. 写代码 → 领域 skill；**开发收尾**提示 `capmap-dev`，再视需要 `capmap-test` / `capmap-norm` / `capmap-archive`。
+4. 写代码 → 领域 skill；**编码收尾**对照方案判定完成度 → 直接走 [capmap-dev](../capmap-dev/SKILL.md)（标 `已开发`）。**禁止**停成「请先自测、测过再说已开发」。标完后**必须询问**是否转 [capmap-test](../capmap-test/SKILL.md)（勿静默结束）；用户同意或已点名再交测试文。再视需要 norm / archive。
 5. 「看 Inbox / 有什么可干的 / 先记下 / 记到 Inbox」→ 读 `<docs_root>/文档首页.md` 的 `## Inbox · 未立项`（协议在 [capmap-scheme](../capmap-scheme/SKILL.md)）。**不要**每个新对话默认倒表。
 6. 贴堆栈 / 「报错修一下」 / 「继续修」 / 已在 debug 回合的「继续」→ [capmap-debug](../capmap-debug/SKILL.md)（**不**推进方案/切片 Tag）。
 
@@ -82,7 +82,7 @@ description: >-
 2. 禁止全局变更台账 / ledger_id / CL-ID。
 3. 禁止能力底图用 `README.md` 命名。
 4. 进行中方案必须有 **`## 变更记录`**。
-5. **已开发** = 代码合入 + 底图 §1/§2 已更新；**体量/大** 另须切片全 `已验收`（见 capmap-dev）。
+5. **已开发** = 方案范围已在工作区落地 + 底图 §1/§2 已更新（Agent 对照方案判定；**不**等人测）；**体量/大** 另须切片全 `已验收`（见 capmap-dev）。人测/免测才进 `已验证`。
 6. **长期「怎么用/怎么配」** 进 `规范/`，不进一次性方案；底图 §3 链接之。
 7. **测试计划与记录** 进 `测试/`；底图可链到对应测试文档。
 8. 方案归档宜在「开发标识 +（如需）测试/规范」之后；归档不留 stub；大需求切片目录随方案归档。

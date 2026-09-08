@@ -27,7 +27,7 @@ capmap-skills 的解法：
 |------|------|
 | 初始化 | 选定任意名的 `docs_root`，建骨架、写 `capmap.yaml`，写入 Obsidian `graph.json` 颜色组 |
 | 写方案 | 进行中方案带 `## 变更记录` |
-| 开发收尾 | 合入后更新底图 §1/§2，方案标「已开发」（≠ 已落地） |
+| 开发收尾 | 对照方案判定完成后更新底图 §1/§2，方案标「已开发」，并询问是否转测试（≠ 已验证 / 已落地） |
 | 测试 / 规范 | 测试进 `测试/`，长期用法进 `规范/`，再谈落地 |
 | 反补 / 归档 | git 反补底图 §4；闭环方案进 `_archive`（不留 stub） |
 | 校验 | `capmap-lint` 查断链、状态跳步等；skill 内含 GitHub `action.yml` |
@@ -64,8 +64,8 @@ capmap-skills 的解法：
 | `capmap-spec` | 大需求：执行规格 |
 | `capmap-slice` | 大需求：垂直切片 DAG；推荐运行模式后停住 |
 | `capmap-gate` | 大需求：frontier / 点名开干 / 交票验收 |
-| `capmap-dev` | 开发完成后更新底图（大：须切片全验收） |
-| `capmap-test` | 测试计划与记录 |
+| `capmap-dev` | 对照方案判定完成后更新底图（大：须切片全验收）；标完询问是否转测试 |
+| `capmap-test` | 测试计划与记录（用户确认转测后拍 1；拍 2 人测/免测 → 已验证） |
 | `capmap-norm` | 长期使用 / 配置规范 |
 | `capmap-backfill` | 从 git 反补底图 §4 |
 | `capmap-archive` | 方案归档 |

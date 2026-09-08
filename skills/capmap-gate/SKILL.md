@@ -33,8 +33,8 @@ description: >-
 5. 交票 → `待验收`：切片文必须有 **Demo 步骤** 与 **自测摘要**；缺则不得标待验收
 6. `待验收` → `已验收`：**仅人确认**（如「通过」「验收完成」）；Agent 不得自评
 7. 验收后重算 frontier 并展示；仍不自动开下一张
-8. 全部切片 `已验收` 后：提示用户可走 [capmap-dev](../capmap-dev/SKILL.md)（勿擅自标方案已开发）
-9. 切片验收 ≠ 功能验证；整功能仍走 [capmap-test](../capmap-test/SKILL.md)
+8. 全部切片 `已验收` 后：走 [capmap-dev](../capmap-dev/SKILL.md)；标完已开发后询问是否转测试；未齐时勿标方案已开发
+9. 切片验收 ≠ 功能验证；整功能仍走 [capmap-test](../capmap-test/SKILL.md)（经用户确认转测后）
 
 ## 动作速查
 

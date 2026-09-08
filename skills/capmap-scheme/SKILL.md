@@ -51,7 +51,7 @@ description: >-
 2. **询问用户是否可行**；用户可改判。  
 3. 确认后写入 YAML `体量/小` 或 `体量/大`。  
 4. **禁止**静默自定体量后直接开干。  
-5. 小 → 提醒短路径（编码 → capmap-dev）；大 → 提醒 [capmap-spec](../capmap-spec/SKILL.md) → [capmap-slice](../capmap-slice/SKILL.md) → [capmap-gate](../capmap-gate/SKILL.md)。
+5. 小 → 提醒短路径（编码 → Agent 对照方案 → capmap-dev → **询问是否转测试**）；大 → 提醒 [capmap-spec](../capmap-spec/SKILL.md) → [capmap-slice](../capmap-slice/SKILL.md) → [capmap-gate](../capmap-gate/SKILL.md)。
 
 ### 已归档后再改需求 → 开 Vn
 
@@ -103,5 +103,5 @@ description: >-
 - [ ] 4. 方案仅一个合法主状态 Tag；底图无状态 Tag
 - [ ] 5. 抽取待确认点 → grilling 分轮反问（带 ➡️ 推荐）→ 等用户答完
 - [ ] 6. 共识后：变更记录落定案；正文去待定；体量判断+询问 → Tag 已确认+体量
-- [ ] 7. 提醒下一步：小 → 开发中 → capmap-dev；大 → capmap-spec → slice → gate → capmap-dev → test → …
+- [ ] 7. 提醒下一步：小 → 开发中 →（对照方案）capmap-dev → 询问转测试；大 → capmap-spec → slice → gate → capmap-dev → test → …
 ```
