@@ -169,21 +169,77 @@ body.sidebar-tree {
 
 .graph-hud {
   position: absolute;
-  z-index: 2;
-  top: 10px;
+  z-index: 4;
   right: 10px;
+  bottom: 10px;
+  width: 188px;
+  padding: 8px;
+  border-radius: 8px;
+  border: 1px solid var(--vscode-widget-border, #454545);
+  background: var(--vscode-editorWidget-background, #252526);
+  box-sizing: border-box;
+}
+
+.graph-hud-zoom {
   display: flex;
-  gap: 6px;
+  gap: 4px;
+  margin-bottom: 8px;
 }
 
 .graph-hud button {
   min-width: 36px;
   height: 28px;
+  flex: 1;
   border: 1px solid var(--vscode-button-border, transparent);
   border-radius: 4px;
   background: var(--vscode-button-secondaryBackground, #3a3a3a);
   color: var(--vscode-button-secondaryForeground, #fff);
   cursor: pointer;
+}
+
+.graph-hud button.is-on {
+  background: var(--vscode-button-background, #0e639c);
+  color: var(--vscode-button-foreground, #fff);
+}
+
+.graph-hud-slider {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 6px;
+  font-size: 10px;
+  color: var(--vscode-descriptionForeground, #9ca3af);
+}
+
+.graph-hud-slider span {
+  width: 28px;
+  flex: none;
+}
+
+.graph-hud-slider input[type='range'] {
+  flex: 1;
+  min-width: 0;
+  accent-color: var(--vscode-focusBorder, #007acc);
+}
+
+.graph-hud-slider b {
+  width: 28px;
+  flex: none;
+  text-align: right;
+  font-weight: 500;
+  color: var(--vscode-descriptionForeground, #6b7280);
+}
+
+.graph-hud-anim {
+  width: 100%;
+  margin-top: 8px;
+  flex: none;
+}
+
+.graph-hud-meta {
+  margin-top: 8px;
+  font-size: 10px;
+  color: var(--vscode-descriptionForeground, #6b7280);
 }
 
 .graph-tip {

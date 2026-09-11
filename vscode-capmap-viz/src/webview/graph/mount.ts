@@ -71,6 +71,16 @@ function isArchive(type: string, path: string): boolean {
   return type === 'archive' || path.startsWith('_archive/') || path.includes('/_archive/');
 }
 
+function sliderRow(key: string, label: string, value: number, min: number, max: number): string {
+  return (
+    `<label class="graph-hud-slider" data-param="${key}">` +
+    `<span>${label}</span>` +
+    `<input type="range" min="${min}" max="${max}" value="${value}" />` +
+    `<b>${value}</b>` +
+    `</label>`
+  );
+}
+
 export interface CapMapGraphView {
   setGraph(graph: GraphIn, opts?: { keepSelected?: boolean }): void;
   selectNode(id: string | null, focus?: boolean): void;
@@ -85,12 +95,29 @@ export function mountGraph(
   root.innerHTML = '';
   root.classList.add('graph-root');
 
+  const forceParams = {
+    charge: 220,
+    linkDist: 80,
+    centerForce: 30,
+    labelFade: 55,
+    animOn: true,
+    clusterThemes: true,
+  };
+
   const hud = document.createElement('div');
   hud.className = 'graph-hud';
   hud.innerHTML =
-    '<button type="button" data-act="zoom-in" title="放大">+</button>' +
+    '<div class="graph-hud-zoom">' +
     '<button type="button" data-act="zoom-out" title="缩小">−</button>' +
-    '<button type="button" data-act="fit" title="Fit">Fit</button>';
+    '<button type="button" data-act="fit" title="Fit">Fit</button>' +
+    '<button type="button" data-act="zoom-in" title="放大">+</button>' +
+    '</div>' +
+    sliderRow('charge', '斥力', forceParams.charge, 80, 400) +
+    sliderRow('linkDist', '距离', forceParams.linkDist, 40, 180) +
+    sliderRow('centerForce', '中心', forceParams.centerForce, 0, 100) +
+    sliderRow('labelFade', '标签', forceParams.labelFade, 0, 100) +
+    '<button type="button" class="graph-hud-anim is-on" data-act="anim" title="持续微动画">动画：开</button>' +
+    '<div class="graph-hud-meta" data-zoom>缩放 1.00 · 滚轮 / 拖动画布</div>';
   root.appendChild(hud);
 
   const wrap = document.createElement('div');
@@ -103,6 +130,9 @@ export function mountGraph(
   tip.className = 'graph-tip';
   tip.hidden = true;
   root.appendChild(tip);
+
+  const zoomMeta = hud.querySelector('[data-zoom]') as HTMLElement;
+  const animBtn = hud.querySelector('[data-act="anim"]') as HTMLButtonElement;
 
   let graph: GraphIn = { nodes: [], edges: [] };
   let nodes: SimNode[] = [];
@@ -122,10 +152,57 @@ export function mountGraph(
     nodeId: null as string | null,
   };
 
+  const updateZoomMeta = () => {
+    zoomMeta.textContent = `缩放 ${cam.k.toFixed(2)} · 滚轮 / 拖动画布`;
+  };
+
+  const labelThreshold = () => 0.15 + ((100 - forceParams.labelFade) / 100) * 0.9;
+
+  const idleAlpha = () => (forceParams.animOn ? 0.02 : 0);
+
   const positionsOf = (): Record<string, Point> => {
     const out: Record<string, Point> = {};
     for (const n of nodes) out[n.id] = { x: n.x ?? 0, y: n.y ?? 0 };
     return out;
+  };
+
+  const applyForces = (W: number, H: number) => {
+    if (!sim) return;
+    const themes = [...new Set(nodes.map((n) => n.theme).filter(Boolean) as string[])];
+    const existing = sim.force('link') as ReturnType<typeof forceLink<SimNode, SimLink>> | undefined;
+    const links = existing?.links() ?? [];
+    sim
+      .force(
+        'link',
+        forceLink<SimNode, SimLink>(links).id((d) => d.id).distance(forceParams.linkDist).strength(0.55),
+      )
+      .force('charge', forceManyBody().strength(-forceParams.charge))
+      .force('center', forceCenter(W / 2, H / 2))
+      .force('collide', forceCollide<SimNode>().radius((d) => (d.archive ? 16 : 22)))
+      .force('cx', forceX(W / 2).strength((forceParams.centerForce / 100) * 0.15))
+      .force('cy', forceY(H / 2).strength((forceParams.centerForce / 100) * 0.15));
+
+    if (forceParams.clusterThemes && themes.length > 0) {
+      sim
+        .force(
+          'x',
+          forceX<SimNode>((d) => {
+            const i = Math.max(0, themes.indexOf(d.theme ?? ''));
+            return (W * (i + 1)) / (themes.length + 1);
+          }).strength(0.12),
+        )
+        .force(
+          'y',
+          forceY<SimNode>((d) => (d.archive ? H * 0.78 : H * 0.38)).strength(0.1),
+        );
+    } else {
+      sim.force('x', null);
+      sim.force(
+        'y',
+        forceY<SimNode>((d) => (d.archive ? H * 0.72 : H * 0.5)).strength(0.04),
+      );
+    }
+    sim.alphaTarget(idleAlpha()).restart();
   };
 
   const draw = () => {
@@ -148,6 +225,7 @@ export function mountGraph(
     const edges = graph.edges.filter((e) => VISIBLE_KINDS.has(e.kind));
     const hop = selected ? oneHop(selected, edges, VISIBLE_KINDS) : null;
     const pos = positionsOf();
+    const thr = labelThreshold();
 
     for (const e of edges) {
       const a = pos[e.source];
@@ -197,10 +275,10 @@ export function mountGraph(
         ctx.lineWidth = 2;
         ctx.stroke();
       }
-      if (cam.k >= 0.55) {
-        ctx.fillStyle = n.archive ? '#9ca3af' : 'var(--vscode-foreground, #e5e7eb)';
-        // canvas can't use CSS vars reliably — use light/dark-ish default
-        ctx.fillStyle = '#e5e7eb';
+      if (cam.k >= thr) {
+        const labelAlpha = Math.min(1, Math.max(0, (cam.k - thr) / 0.35));
+        ctx.globalAlpha = alpha * labelAlpha;
+        ctx.fillStyle = n.archive ? '#9ca3af' : '#e5e7eb';
         ctx.font = '11px ui-sans-serif, system-ui, sans-serif';
         ctx.textAlign = 'center';
         ctx.textBaseline = 'bottom';
@@ -215,6 +293,7 @@ export function mountGraph(
     fitted = true;
     const pts = nodes.map((n) => ({ x: n.x ?? 0, y: n.y ?? 0 }));
     cam = fitTransform(pts, wrap.clientWidth || 800, wrap.clientHeight || 560);
+    updateZoomMeta();
     draw();
   };
 
@@ -236,41 +315,14 @@ export function mountGraph(
 
     const W = wrap.clientWidth || 800;
     const H = wrap.clientHeight || 560;
-    const themes = [...new Set(nodes.map((n) => n.theme).filter(Boolean) as string[])];
 
     fitted = false;
-    sim = forceSimulation<SimNode>(nodes)
-      .force(
-        'link',
-        forceLink<SimNode, SimLink>(links).id((d) => d.id).distance(80).strength(0.55),
-      )
-      .force('charge', forceManyBody().strength(-220))
-      .force('center', forceCenter(W / 2, H / 2))
-      .force('collide', forceCollide<SimNode>().radius((d) => (d.archive ? 16 : 22)))
-      .force('cx', forceX(W / 2).strength(0.045))
-      .force('cy', forceY(H / 2).strength(0.045));
+    sim = forceSimulation<SimNode>(nodes).force(
+      'link',
+      forceLink<SimNode, SimLink>(links).id((d) => d.id).distance(forceParams.linkDist).strength(0.55),
+    );
+    applyForces(W, H);
 
-    if (themes.length > 0) {
-      sim
-        .force(
-          'x',
-          forceX<SimNode>((d) => {
-            const i = Math.max(0, themes.indexOf(d.theme ?? ''));
-            return (W * (i + 1)) / (themes.length + 1);
-          }).strength(0.12),
-        )
-        .force(
-          'y',
-          forceY<SimNode>((d) => (d.archive ? H * 0.78 : H * 0.38)).strength(0.1),
-        );
-    } else {
-      sim.force(
-        'y',
-        forceY<SimNode>((d) => (d.archive ? H * 0.72 : H * 0.5)).strength(0.04),
-      );
-    }
-
-    sim.alphaTarget(0.02);
     sim.on('tick', () => {
       if (!fitted && (sim?.alpha() ?? 1) < 0.08) fit();
       else draw();
@@ -366,7 +418,7 @@ export function mountGraph(
         if (n) {
           n.fx = null;
           n.fy = null;
-          sim?.alphaTarget(0.02);
+          sim?.alphaTarget(idleAlpha());
         }
       }
       pointer.mode = 'none';
@@ -390,7 +442,7 @@ export function mountGraph(
       if (n) {
         n.fx = null;
         n.fy = null;
-        sim?.alphaTarget(0.02);
+        sim?.alphaTarget(idleAlpha());
       }
     }
     pointer.mode = 'none';
@@ -404,23 +456,49 @@ export function mountGraph(
       const { x, y } = localXY(ev);
       const factor = ev.deltaY > 0 ? 0.9 : 1.1;
       cam = zoomAt(cam, x, y, cam.k * factor);
+      updateZoomMeta();
       draw();
     },
     { passive: false },
   );
 
   hud.addEventListener('click', (ev) => {
-    const t = ev.target as HTMLElement | null;
+    const t = (ev.target as HTMLElement | null)?.closest('[data-act]') as HTMLElement | null;
     const act = t?.getAttribute('data-act');
     if (act === 'fit') fit();
     if (act === 'zoom-in') {
-      cam = zoomAt(cam, wrap.clientWidth / 2, wrap.clientHeight / 2, cam.k * 1.2);
+      cam = zoomAt(cam, wrap.clientWidth / 2, wrap.clientHeight / 2, cam.k * 1.12);
+      updateZoomMeta();
       draw();
     }
     if (act === 'zoom-out') {
-      cam = zoomAt(cam, wrap.clientWidth / 2, wrap.clientHeight / 2, cam.k * 0.8);
+      cam = zoomAt(cam, wrap.clientWidth / 2, wrap.clientHeight / 2, cam.k / 1.12);
+      updateZoomMeta();
       draw();
     }
+    if (act === 'anim') {
+      forceParams.animOn = !forceParams.animOn;
+      animBtn.textContent = `动画：${forceParams.animOn ? '开' : '关'}`;
+      animBtn.classList.toggle('is-on', forceParams.animOn);
+      sim?.alphaTarget(idleAlpha()).restart();
+    }
+  });
+
+  hud.addEventListener('input', (ev) => {
+    const input = ev.target as HTMLInputElement | null;
+    if (!input || input.type !== 'range') return;
+    const label = input.closest('[data-param]') as HTMLElement | null;
+    const key = label?.getAttribute('data-param') as keyof typeof forceParams | null;
+    if (!key || key === 'animOn' || key === 'clusterThemes') return;
+    const value = Number(input.value);
+    forceParams[key] = value;
+    const badge = label?.querySelector('b');
+    if (badge) badge.textContent = String(value);
+    if (key === 'labelFade') {
+      draw();
+      return;
+    }
+    applyForces(wrap.clientWidth || 800, wrap.clientHeight || 560);
   });
 
   const focusNode = (id: string) => {
@@ -432,10 +510,14 @@ export function mountGraph(
       y: (wrap.clientHeight || 560) / 2 - n.y * k,
       k,
     };
+    updateZoomMeta();
     draw();
   };
 
-  const ro = new ResizeObserver(() => draw());
+  const ro = new ResizeObserver(() => {
+    if (sim) applyForces(wrap.clientWidth || 800, wrap.clientHeight || 560);
+    else draw();
+  });
   ro.observe(wrap);
 
   return {
