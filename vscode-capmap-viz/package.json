@@ -1,0 +1,80 @@
+{
+  "name": "capmap-viz",
+  "displayName": "CapMap Viz",
+  "description": "CapMap docs visualization for VS Code (graph + capability panel)",
+  "version": "0.1.0",
+  "publisher": "chenjh12",
+  "license": "MIT",
+  "engines": {
+    "vscode": "^1.85.0"
+  },
+  "categories": [
+    "Visualization",
+    "Other"
+  ],
+  "activationEvents": [],
+  "main": "./out/extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "capmapViz.open",
+        "title": "CapMap: Open Visualization",
+        "icon": "$(type-hierarchy)"
+      },
+      {
+        "command": "capmapViz.selectWorkspace",
+        "title": "CapMap: Select Workspace Root"
+      }
+    ],
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "capmap-viz",
+          "title": "CapMap",
+          "icon": "media/capmap-activity.svg"
+        }
+      ]
+    },
+    "views": {
+      "capmap-viz": [
+        {
+          "id": "capmapViz.sidebar",
+          "name": "能力底图",
+          "type": "webview"
+        }
+      ]
+    },
+    "menus": {
+      "view/title": [
+        {
+          "command": "capmapViz.open",
+          "when": "view == capmapViz.sidebar",
+          "group": "navigation"
+        }
+      ]
+    }
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run compile",
+    "compile": "tsc -p ./ && npm run build:webview",
+    "build:webview": "npm run build:webview:panel && npm run build:webview:sidebar",
+    "build:webview:panel": "npx esbuild src/webview/main.ts --bundle --format=iife --platform=browser --outfile=media/webview.js",
+    "build:webview:sidebar": "npx esbuild src/webview/sidebar-main.ts --bundle --format=iife --platform=browser --outfile=media/sidebar.js",
+    "watch": "tsc -watch -p ./",
+    "test": "node --experimental-strip-types --test src/parser/parse.test.ts src/parser/queries.test.ts src/graph/graph.test.ts src/setupHint.test.ts src/webview/panel/themeTree.test.ts",
+    "package": "powershell -NoProfile -ExecutionPolicy Bypass -File ./scripts/pack-vsix.ps1"
+  },
+  "dependencies": {
+    "d3-force": "3.0.0",
+    "js-yaml": "^4.1.0"
+  },
+  "devDependencies": {
+    "@types/d3-force": "3.0.10",
+    "@types/js-yaml": "^4.0.9",
+    "@types/node": "^20.11.0",
+    "@types/vscode": "^1.85.0",
+    "@vscode/vsce": "^3.9.2",
+    "esbuild": "0.25.12",
+    "typescript": "^5.8.0"
+  }
+}
