@@ -5,7 +5,8 @@ description: >-
   git 反补、docs_root、capmap-lint。配置 .agents/skills/capmap-system/capmap.yaml。
   主源仓库 capmap-skills（本套件）。当用户提到 capmap、能力底图、文档体系、测试文档、使用规范、归档、
   文档 lint、规格切片门禁、看 Inbox、先记下、运行时报错/debug 回合、
-  或不确定该用哪个 capmap-* 阶段时使用。各阶段 Skill 可独立触发。
+  编码收尾/功能开发完了/联调自测后的文档状态、或不确定该用哪个 capmap-* 阶段时使用。
+  编码收尾禁止「测完再说已开发」——应直接 capmap-dev，再问是否转测试。各阶段 Skill 可独立触发。
 ---
 
 # capmap-skills（总入口）
@@ -72,7 +73,9 @@ description: >-
 1. 匹配上表 → 加载对应阶段 Skill。
 2. 只问规范/闭环怎么走 → 本 Skill + lifecycle。
 3. **体量/大** 且在规格/拆分/切片执行期 → spec / slice / gate（勿跳过直接 dev）。
-4. 写代码 → 领域 skill；**编码收尾**对照方案判定完成度 → 直接走 [capmap-dev](../capmap-dev/SKILL.md)（标 `已开发`）。**禁止**停成「请先自测、测过再说已开发」。标完后**必须询问**是否转 [capmap-test](../capmap-test/SKILL.md)（勿静默结束）；用户同意或已点名再交测试文。再视需要 norm / archive。
+4. 写代码 → 领域 skill；**编码收尾**对照方案判定完成度 → **本回合**走 [capmap-dev](../capmap-dev/SKILL.md)（标 `已开发`）并询问是否转测试。  
+   **禁止话术**（出现即违规）：「测完可以说一声再标已开发」「联调自测…再走 capmap-dev」「请先自测、测过再说」。  
+   正确：可附建议联调点，但状态先落到 `已开发`，再问是否转 [capmap-test](../capmap-test/SKILL.md)。用户同意或已点名再交测试文。
 5. 「看 Inbox / 有什么可干的 / 先记下 / 记到 Inbox」→ 读 `<docs_root>/文档首页.md` 的 `## Inbox · 未立项`（协议在 [capmap-scheme](../capmap-scheme/SKILL.md)）。**不要**每个新对话默认倒表。
 6. 贴堆栈 / 「报错修一下」 / 「继续修」 / 已在 debug 回合的「继续」→ [capmap-debug](../capmap-debug/SKILL.md)（**不**推进方案/切片 Tag）。
 
