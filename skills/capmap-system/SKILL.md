@@ -5,7 +5,8 @@ description: >-
   git 反补、docs_root、capmap-lint。配置 .agents/skills/capmap-system/capmap.yaml。
   主源仓库 capmap-skills（本套件）。当用户提到 capmap、能力底图、文档体系、测试文档、使用规范、归档、
   文档 lint、规格切片门禁、看 Inbox、先记下、运行时报错/debug 回合、
-  编码收尾/功能开发完了/联调自测后的文档状态、或不确定该用哪个 capmap-* 阶段时使用。
+  窗口交接/换窗续/交棒接棒、编码收尾/功能开发完了/联调自测后的文档状态、
+  或不确定该用哪个 capmap-* 阶段时使用。
   编码收尾禁止「测完再说已开发」——应直接 capmap-dev，再问是否转测试。各阶段 Skill 可独立触发。
 ---
 
@@ -31,7 +32,9 @@ description: >-
         ↑
 日常反补                 capmap-backfill
 
-旁路（不进状态机）：capmap-debug ← 贴报错 / 修锅 / debug 回合
+旁路（不进状态机）：
+  capmap-debug  ← 贴报错 / 修锅 / debug 回合
+  capmap-handoff ← 换窗交棒 / 接棒（进行中；≠ Inbox）
 ```
 
 | 阶段产物 | 落点 |
@@ -59,6 +62,7 @@ description: >-
 | 方案归档 | [capmap-archive](../capmap-archive/SKILL.md) | 「方案归档」「方案已闭环」 |
 | 文档校验 | [capmap-lint](../capmap-lint/SKILL.md) | 「文档 lint」「检查文档体系」 |
 | 运行时修锅 / debug | [capmap-debug](../capmap-debug/SKILL.md) | 贴 Error/Traceback、「修一下」、继续修；强制清单与 3 次停损 |
+| 窗口交接 | [capmap-handoff](../capmap-handoff/SKILL.md) | 「交接窗口」「换窗」「交棒」「接棒」；进行中冷启动；禁止写 Inbox |
 
 > [templates](reference/templates.md) · [status-tags](reference/status-tags.md) · [decisions](reference/decisions.md) · [directory-contract](reference/directory-contract.md) · [project-config](reference/project-config.md) · [lifecycle](reference/lifecycle.md)
 
@@ -76,8 +80,9 @@ description: >-
 4. 写代码 → 领域 skill；**编码收尾**对照方案判定完成度 → **本回合**走 [capmap-dev](../capmap-dev/SKILL.md)（标 `已开发`）并询问是否转测试。  
    **禁止话术**（出现即违规）：「测完可以说一声再标已开发」「联调自测…再走 capmap-dev」「请先自测、测过再说」。  
    正确：可附建议联调点，但状态先落到 `已开发`，再问是否转 [capmap-test](../capmap-test/SKILL.md)。用户同意或已点名再交测试文。
-5. 「看 Inbox / 有什么可干的 / 先记下 / 记到 Inbox」→ 读 `<docs_root>/文档首页.md` 的 `## Inbox · 未立项`（协议在 [capmap-scheme](../capmap-scheme/SKILL.md)）。**不要**每个新对话默认倒表。
+5. 「看 Inbox / 有什么可干的 / 先记下 / 记到 Inbox」→ 读 `<docs_root>/文档首页.md` 的 `## Inbox · 未立项`（协议在 [capmap-scheme](../capmap-scheme/SKILL.md)）。**不要**每个新对话默认倒表。**进行中换窗**勿写 Inbox → [capmap-handoff](../capmap-handoff/SKILL.md)。
 6. 贴堆栈 / 「报错修一下」 / 「继续修」 / 已在 debug 回合的「继续」→ [capmap-debug](../capmap-debug/SKILL.md)（**不**推进方案/切片 Tag）。
+7. 「交接窗口 / 换窗 / 交棒 / 接棒 / 上下文太长」→ [capmap-handoff](../capmap-handoff/SKILL.md)（**不**改 `状态/*`；接棒后作废活跃交接文）。
 
 ## 硬规则
 

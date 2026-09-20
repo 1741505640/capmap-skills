@@ -53,6 +53,7 @@ description: >-
 | 功能怎么做、要不要做 | [capmap-scheme](../capmap-scheme/SKILL.md) |
 | 切片点名 / 验收 | [capmap-gate](../capmap-gate/SKILL.md) |
 | 功能测完记文档 | [capmap-test](../capmap-test/SKILL.md) |
+| debug 中上下文太长要换窗 | [capmap-handoff](../capmap-handoff/SKILL.md)（交接文带复现/假设/n/3） |
 
 ## Checklist
 

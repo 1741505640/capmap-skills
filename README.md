@@ -45,6 +45,8 @@ capmap-skills 的解法：
 测试 / 规范 / 归档    capmap-test → norm → archive
       ↑
 反补                  capmap-backfill
+
+旁路                  capmap-debug · capmap-handoff
 ```
 
 方案主状态（**禁止跳步**；大需求多 `规格中`→`已拆分`）：
@@ -71,6 +73,7 @@ capmap-skills 的解法：
 | `capmap-archive` | 方案归档 |
 | `capmap-lint` | 结构校验 + `action.yml` |
 | `capmap-debug` | 运行时修锅回合：复现/假设/停损；不进状态机 |
+| `capmap-handoff` | 窗口交接：进行中换窗冷启动；`_handoff/`；不进状态机 |
 
 契约细节：`skills/capmap-system/reference/`。
 

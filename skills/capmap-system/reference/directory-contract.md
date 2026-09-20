@@ -41,6 +41,9 @@
 │   └── 交付说明.md
 ├── 运维/
 │   └── 运维说明.md
+├── _handoff/                 # 窗口交接（进行中换窗；见 capmap-handoff）
+│   ├── <scope>-YYYYMMDD-HHmm.md
+│   └── _consumed/            # 接棒后移入；保留最近 5 份
 └── _archive/
     ├── 归档索引.md
     ├── 方案/<主题>/
@@ -86,6 +89,20 @@
 写入门槛：下轮能单独干、写得出开干指令、vault 里还没有对应方案/切片。禁止：已在做的票、已落盘观察项、空话建议。
 
 人点名某行 → **当场执行**开干指令 → 删行。丢掉只删行、不写「未采纳」。新对话默认不倒表。碎片无 `状态/*`、不进底图 §1。lint **不**检查缺节或空表。
+
+**进行中工作换窗** → [`capmap-handoff`](../../capmap-handoff/SKILL.md) 的 `_handoff/`，**禁止**写成 Inbox 行。
+
+## 窗口交接 `_handoff`
+
+| 规则 | 说明 |
+|------|------|
+| 用途 | 进行中会话因上下文过长换窗；冷启动包 |
+| 活跃 | `_handoff/<scope>-YYYYMMDD-HHmm.md`；同 scope 最多 1 份活跃 |
+| 消费 | 接棒后移入 `_handoff/_consumed/`；保留最近 5 份 |
+| Tag | 无 `状态/*`；不进底图 §1 |
+| lint | 不强制（与 Inbox 同级宽松） |
+
+样例见 [templates](templates.md#窗口交接-_handoff)。协议见 [capmap-handoff](../../capmap-handoff/SKILL.md)。
 
 ## gitignore
 
